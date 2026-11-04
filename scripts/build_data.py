@@ -182,6 +182,11 @@ for k, r in by_id(sheet("参考資料２__２_予定", None)).items():
     if k in H:
         mdcd[k]["adm"] = [[num(x) for x in r[3 + 4 * i: 7 + 4 * i]] for i in range(18)]  # 予定, 化学療法再入院, 予定外, 救急医療入院
 
+# ---------- 参考2 (3) MDC別 救急車による搬送 ----------
+for k, r in by_id(sheet("参考資料２__３_救急車", None)).items():
+    if k in H:
+        mdcd[k]["amb"] = [[num(r[3 + 2 * i]), num(r[4 + 2 * i])] for i in range(18)]  # 救急車による搬送, 合計（搬送の10件未満は None）
+
 # ---------- 参考2 (4) 入院から24時間以内の死亡 ----------
 for k, r in by_id(sheet("参考資料２__４_入院から", None)).items():
     if k in H:

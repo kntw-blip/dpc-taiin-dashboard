@@ -133,6 +133,24 @@
       <div class="card" data-chart="adm-rank"><h3 id="adm-rank-title">件数の比較</h3><div class="chart tall" id="c-adm-rank"></div></div>
       <div class="card" data-chart="adm-comp"><h3 id="adm-comp-title">入院区分の構成</h3><div class="chart tall" id="c-adm-comp"></div></div>
     </div>
+    <h3 class="subhead" id="s-ambm">救急車による搬送のMDC別分析</h3>
+    <div class="method">
+      <p><b>対象</b>：様式1の「救急車による搬送の有無」が「あり」の患者（入院経路が家庭・他院・介護施設等からの患者）。「搬送率」は、救急車による搬送の件数 ÷ 同じMDCの合計件数です。</p>
+      <p><b>10件未満の扱い</b>：搬送件数が10件未満のセルは公表データで秘匿（–）されており、「10件未満」と表示します。比較対象全体の搬送率・シェア・構成比は、搬送件数が公表されているセルだけで計算しています（秘匿されたセルは分子・分母の両方から除外）。そのため、搬送件数の少ない病院が多いMDCでは、比較対象全体の値がやや高めに出ることがあります。</p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="ambm-rate"><h3>救急車搬送率（MDC別）：自院と比較対象全体</h3><div class="chart tall" id="c-ambm-rate"></div></div>
+      <div class="card" data-chart="ambm-share"><h3>救急車搬送のシェア（MDC別） <span class="note">比較対象内</span></h3><div class="chart tall" id="c-ambm-share"></div></div>
+    </div>
+    <div class="card" data-chart="ambm-mix"><h3>救急車搬送の疾患構成：自院と比較対象全体 <span class="note">救急車で搬送された患者のMDC別の内訳</span></h3><div class="chart tall" id="c-ambm-mix"></div></div>
+    <div class="card surg-pick">
+      <h3>MDCを選んで比較</h3>
+      <div class="pick-row"><div class="f-item"><label for="ambm-mdc">MDC</label><select id="ambm-mdc" class="sel"></select></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="ambm-rank"><h3 id="ambm-rank-title">救急車搬送の件数</h3><div class="chart tall" id="c-ambm-rank"></div></div>
+      <div class="card" data-chart="ambm-sc"><h3 id="ambm-sc-title">合計件数と救急車搬送率</h3><div class="chart tall" id="c-ambm-sc"></div></div>
+    </div>
   </section>
 
   <section id="s-link" class="sec">

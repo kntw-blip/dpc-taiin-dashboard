@@ -251,7 +251,8 @@ function scatter(id, xk, yk, opt = {}) {
         emphasis: { scale: 1.4 },
         markLine: ref.length ? { silent: true, symbol: "none", lineStyle: { color: css("--axis"), type: "solid", width: 1 }, label: { show: false }, data: ref } : undefined },
       { name: "自院", type: "scatter", data: me, symbolSize: 14, z: 10, itemStyle: { color: css("--self"), borderColor: ring, borderWidth: 2 },
-        label: { show: true, position: "right", formatter: (p) => S.byId.get(p.data.hid).short, color: css("--text-primary"), fontSize: 12, fontWeight: 600 } },
+        label: { show: true, position: me.length && others.length && me[0].value[0] >= Math.max(...others.map((o) => o.value[0])) * 0.85 ? "left" : "right",
+          formatter: (p) => S.byId.get(p.data.hid).short, color: css("--text-primary"), fontSize: 12, fontWeight: 600 } },
     ],
   }, true);
   setTable(id, ["病院", mx.label, my.label], pts.map((h) => ({ self: h === self, cells: [h.name, mx.fmt(mx.get(h)), my.fmt(my.get(h))] })));
@@ -626,6 +627,97 @@ function renderAdmPick() {
     .concat(others.map(([h, c]) => ({ name: h.short, full: h.name, c }))));
 }
 
+/* ---------- 4'' 救急車による搬送のMDC別分析 ---------- */
+/* 戻り値: {n: 搬送件数（秘匿は null）, t: 合計}。mi="all" は公表されているMDCだけの合計 */
+function ambCell(h, mi) {
+  const d = S.mdc && S.mdc[h.id]; if (!d || !d.amb) return null;
+  if (mi === "all") { let n = 0, t = 0, hid = 0, any = false;
+    d.amb.forEach(([a, b]) => { if (b == null) return; any = true; if (a == null) hid += 1; else { n += a; t += b; } });
+    return any ? { n, t, hidden: hid } : null; }
+  const x = d.amb[mi]; if (!x || x[1] == null) return null;
+  return { n: x[0], t: x[1], hidden: x[0] == null ? 1 : 0 };
+}
+function ambGroup(mi, list) { let n = 0, t = 0; list.forEach((h) => { const c = ambCell(h, mi); if (c && c.n != null) { n += c.n; t += c.t; } }); return { n, t }; }
+const ambLabel = (c) => (!c ? "–" : c.n == null ? "10件未満" : F.int(c.n) + "件");
+function renderAmbM() {
+  const self = S.self, b = base();
+  const mine = MDCS.map((_, i) => ambCell(self, i)), grp = MDCS.map((_, i) => ambGroup(i, S.G));
+  const rs = mine.map((c) => (c && c.n != null && c.t ? c.n / c.t : null)), rg = grp.map((g) => (g.t ? g.n / g.t : null));
+  // A 搬送率
+  chart("c-ambm-rate").setOption({
+    ...b, grid: { left: 8, right: 110, top: 30, bottom: 24, containLabel: true },
+    legend: { top: 0, right: 0, textStyle: { color: css("--text-secondary"), fontSize: 11 }, data: ["自院", "比較対象全体"] },
+    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } },
+      formatter: (ps) => { const i = ps[0].dataIndex; return `<div style="margin-bottom:2px">${esc(MDCS[i])}</div>` +
+        tipRow(`${F.pct(rs[i])}（${ambLabel(mine[i])} / ${mine[i] ? F.int(mine[i].t) : "–"}件）`, "自院") + tipRow(`${F.pct(rg[i])}（${F.int(grp[i].n)} / ${F.int(grp[i].t)}件）`, "比較対象全体"); } },
+    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
+    yAxis: ax(b, { type: "category", inverse: true, data: MDCS, splitLine: { show: false } }),
+    series: [
+      { name: "自院", type: "bar", data: rs.map((x) => x ?? 0), barMaxWidth: 8, barGap: "20%", itemStyle: { color: css("--self"), borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: "right", fontSize: 11, color: css("--text-primary"), formatter: (p) => { const c = mine[p.dataIndex]; return !c ? "–" : c.n == null ? "10件未満" : `${F.pct(rs[p.dataIndex])}（${F.int(c.n)}件）`; } } },
+      { name: "比較対象全体", type: "bar", data: rg.map((x) => x ?? 0), barMaxWidth: 8, itemStyle: { color: css("--other-strong"), borderRadius: [0, 4, 4, 0] } },
+    ],
+  }, true);
+  setNote("c-ambm-rate", "括弧内は自院の救急車搬送の件数。「10件未満」は秘匿のため率を表示していません。");
+  setTable("c-ambm-rate", ["MDC", "自院の搬送件数", "自院の合計", "自院の搬送率", "比較対象全体の搬送件数", "比較対象全体の合計", "比較対象全体の搬送率"],
+    MDCS.map((m, i) => ({ cells: [m, ambLabel(mine[i]), mine[i] ? F.int(mine[i].t) : "–", F.pct(rs[i]), F.int(grp[i].n), F.int(grp[i].t), F.pct(rg[i])] })));
+  // B シェア（順位つき）
+  const share = mine.map((c, i) => (c && c.n != null && grp[i].n ? c.n / grp[i].n : null));
+  const rk = mine.map((c, i) => { if (!c || c.n == null) return null; const vals = S.G.map((h) => ambCell(h, i)).filter((x) => x && x.n != null).map((x) => x.n);
+    return { r: vals.filter((v) => v > c.n).length + 1, n: vals.length }; });
+  chart("c-ambm-share").setOption({
+    ...b, grid: { left: 8, right: 110, top: 10, bottom: 24, containLabel: true },
+    tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => { const i = p.dataIndex; return `<div style="margin-bottom:2px">${esc(MDCS[i])}</div>` +
+      tipRow(F.pct(share[i]), "比較対象内のシェア") + tipRow(ambLabel(mine[i]), "自院の救急車搬送") + tipRow(F.int(grp[i].n) + "件", "比較対象の合計（公表分）") + (rk[i] ? tipRow(`${rk[i].r}位 / ${rk[i].n}`, "順位") : ""); } },
+    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
+    yAxis: ax(b, { type: "category", inverse: true, data: MDCS, splitLine: { show: false } }),
+    series: [{ type: "bar", data: share.map((v) => v ?? 0), barMaxWidth: 14, itemStyle: { color: css("--self"), borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: "right", color: css("--text-secondary"), fontSize: 11,
+        formatter: (p) => { const i = p.dataIndex; return share[i] == null ? (mine[i] && mine[i].n == null ? "10件未満" : "–") : `${F.pct(share[i])}（${rk[i].r}位/${rk[i].n}）`; } } }],
+  }, true);
+  setNote("c-ambm-share", "括弧内は比較対象内の順位。");
+  setTable("c-ambm-share", ["MDC", "自院の搬送件数", "比較対象の合計（公表分）", "シェア", "順位"],
+    MDCS.map((m, i) => ({ cells: [m, ambLabel(mine[i]), F.int(grp[i].n), F.pct(share[i]), rk[i] ? `${rk[i].r} / ${rk[i].n}` : "–"] })));
+  // C 疾患構成
+  const sN = mine.map((c) => (c && c.n != null ? c.n : 0)), sT = sum(sN), gT = sum(grp.map((g) => g.n));
+  const mixS = sN.map((x) => (sT ? x / sT : null)), mixG = grp.map((g) => (gT ? g.n / gT : null));
+  chart("c-ambm-mix").setOption({
+    ...b, grid: { left: 8, right: 20, top: 30, bottom: 24, containLabel: true },
+    legend: { top: 0, right: 0, textStyle: { color: css("--text-secondary"), fontSize: 11 }, data: ["自院", "比較対象全体"] },
+    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } },
+      formatter: (ps) => { const i = ps[0].dataIndex; return `<div style="margin-bottom:2px">${esc(MDCS[i])}</div>` + tipRow(`${F.pct(mixS[i])}（${ambLabel(mine[i])}）`, "自院") + tipRow(`${F.pct(mixG[i])}（${F.int(grp[i].n)}件）`, "比較対象全体"); } },
+    xAxis: ax(b, { type: "category", data: MDCS.map((m) => m.slice(0, 2)), splitLine: { show: false } }),
+    yAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
+    series: [
+      { name: "自院", type: "bar", data: mixS, barMaxWidth: 14, barGap: "15%", itemStyle: { color: css("--self"), borderRadius: [4, 4, 0, 0] } },
+      { name: "比較対象全体", type: "bar", data: mixG, barMaxWidth: 14, itemStyle: { color: css("--other-strong"), borderRadius: [4, 4, 0, 0] } },
+    ],
+  }, true);
+  setNote("c-ambm-mix", `横軸はMDC番号（01 神経系 … 18 その他、名称は表で確認できます）。自院の救急車搬送 ${F.int(sT)}件・比較対象全体 ${F.int(gT)}件（いずれも公表分）。`);
+  setTable("c-ambm-mix", ["MDC", "自院の搬送件数", "自院の構成比", "比較対象全体の搬送件数", "比較対象全体の構成比"],
+    MDCS.map((m, i) => ({ cells: [m, ambLabel(mine[i]), F.pct(mixS[i]), F.int(grp[i].n), F.pct(mixG[i])] })));
+  renderAmbPick();
+}
+function initAmbPick() {
+  const sm = $("#ambm-mdc");
+  [["all", "全MDC"]].concat(MDCS.map((m, i) => [i, m])).forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sm.appendChild(o); });
+  sm.value = 4;  // 初期は循環器系
+  sm.addEventListener("change", () => { renderAmbPick(); refreshOpenTables(); });
+}
+function renderAmbPick() {
+  const mv = $("#ambm-mdc").value, mi = mv === "all" ? "all" : +mv, nm = mi === "all" ? "全MDC" : MDCS[mi];
+  $("#ambm-rank-title").textContent = `救急車搬送の件数（${nm}）`;
+  $("#ambm-sc-title").textContent = `合計件数と救急車搬送率（${nm}）`;
+  const mN = { label: "救急車搬送の件数", unit: "件", fmt: F.int, get: (h) => { const c = ambCell(h, mi); return c && c.n != null ? c.n : null; } };
+  rankChart("c-ambm-rank", mN, { extra: (h) => { const c = ambCell(h, mi); return c ? tipRow(F.int(c.t) + "件", "合計") + (mi === "all" && c.hidden ? tipRow(`${c.hidden}MDC`, "10件未満で除外") : "") : ""; } });
+  const mT = { label: "合計件数", unit: "件", fmt: F.int, get: (h) => { const c = ambCell(h, mi); return c && c.n != null ? c.t : null; } };
+  const mR = { label: "救急車搬送率", unit: "", fmt: F.pct, get: (h) => { const c = ambCell(h, mi); return c && c.n != null && c.t ? c.n / c.t : null; } };
+  const g = ambGroup(mi, S.G);
+  scatter("c-ambm-sc", mT, mR, { refY: g.t ? g.n / g.t : null, refYLabel: `比較対象全体 ${F.pct(g.t ? g.n / g.t : null)}` });
+  const me = ambCell(S.self, mi);
+  setNote("c-ambm-sc", (me && me.n == null ? "自院はこのMDCの搬送件数が10件未満のため表示されません。" : "") + "横線は比較対象全体の救急車搬送率。搬送件数が10件未満の病院は表示されません。");
+}
+
 /* ---------- 5 地域連携 ---------- */
 function renderLink() {
   rankChart("c-rank-ref", "ref6");
@@ -936,7 +1028,7 @@ function renderAll() {
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);
   history.replaceState(null, "", u);
 }
-function renderMdcDependent() { if (!S.self) return; renderMdcEff(); renderMdcEmg(); if (S.mdc) renderAdm(); refreshOpenTables(); }
+function renderMdcDependent() { if (!S.self) return; renderMdcEff(); renderMdcEmg(); if (S.mdc) { renderAdm(); renderAmbM(); } refreshOpenTables(); }
 
 /* ---------- 病院検索 ---------- */
 function initSearch() {
@@ -988,7 +1080,7 @@ function syncSeg() {
 }
 
 (async function main() {
-  initControls(); initTableButtons(); initAdmPick();
+  initControls(); initTableButtons(); initAdmPick(); initAmbPick();
   try { await load(); } catch (e) { $("#empty").textContent = "データの読み込みに失敗しました。ページを再読み込みしてください。"; throw e; }
   initSearch();
   const p = new URLSearchParams(location.search);
