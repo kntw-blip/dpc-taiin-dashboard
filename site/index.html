@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DPC退院患者調査ダッシュボード（令和6年度）</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="viz-root">
+<header class="page-head">
+  <h1>DPC退院患者調査ダッシュボード <span class="sub">令和6年度（令和6年6月〜令和7年5月退院）</span></h1>
+  <p class="lead">自院を選ぶと、同じ二次医療圏、または同じ法人の病院と比較できます。</p>
+</header>
+
+<section class="filters" aria-label="表示条件">
+  <div class="f-item f-search">
+    <label for="q">自院</label>
+    <div class="combo">
+      <input id="q" type="search" autocomplete="off" placeholder="病院名で検索（例：日赤、市民病院）" role="combobox" aria-expanded="false" aria-controls="q-list">
+      <ul id="q-list" class="combo-list" role="listbox" hidden></ul>
+    </div>
+  </div>
+  <div class="f-item">
+    <span class="f-label" id="axis-label">比較軸</span>
+    <div class="seg" role="radiogroup" aria-labelledby="axis-label">
+      <button type="button" role="radio" data-axis="area" aria-checked="true">二次医療圏</button>
+      <button type="button" role="radio" data-axis="corp" aria-checked="false">法人</button>
+    </div>
+  </div>
+  <div class="f-item">
+    <span class="f-label" id="scope-label">比較対象</span>
+    <div class="seg" role="radiogroup" aria-labelledby="scope-label">
+      <button type="button" role="radio" data-scope="dpc" aria-checked="true">DPC参加・準備病院</button>
+      <button type="button" role="radio" data-scope="all" aria-checked="false">出来高算定病院も含む</button>
+    </div>
+  </div>
+  <div class="f-item f-theme">
+    <button type="button" id="theme" class="ghost" aria-label="表示テーマの切り替え">表示：自動</button>
+  </div>
+</section>
+
+<div id="empty" class="empty">
+  <p>上の検索欄から自院を選んでください。</p>
+  <p class="muted">全国6,370施設（DPC参加1,765・準備228・出来高算定4,377）を収録しています。</p>
+</div>
+
+<main id="main" hidden>
+  <section class="selfcard" aria-live="polite">
+    <div>
+      <h2 id="self-name"></h2>
+      <p id="self-meta" class="muted"></p>
+    </div>
+    <div class="group-chip" id="group-chip"></div>
+  </section>
+
+  <nav class="toc" aria-label="セクション">
+    <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
+    <a href="#s-emg">4 救急</a><a href="#s-link">5 地域連携</a><a href="#s-adv">6 手術・高度医療</a><a href="#s-qual">7 医療の質</a>
+    <a href="#s-drug">8 薬剤</a><a href="#s-table">比較表</a>
+  </nav>
+
+  <section id="s-summary" class="sec">
+    <h2>サマリー</h2>
+    <div id="kpis" class="kpis"></div>
+    <div class="grid2">
+      <div class="card" data-chart="radar"><h3>比較対象の平均との比較 <span class="note">他院平均＝100</span></h3><div class="chart" id="c-radar"></div></div>
+      <div class="card"><h3>比較対象内の順位</h3><div id="ranks" class="ranks"></div></div>
+    </div>
+  </section>
+
+  <section id="s-scale" class="sec">
+    <h2>1 規模・概要</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-n"><h3>退院患者数（令和6年度）</h3><div class="chart tall" id="c-rank-n"></div></div>
+      <div class="card" data-chart="sc-beds"><h3>病床数と退院患者数</h3><div class="chart tall" id="c-sc-beds"></div></div>
+    </div>
+    <div class="card" data-chart="beds"><h3>病床の構成</h3><div class="chart" id="c-beds"></div></div>
+  </section>
+
+  <section id="s-mdc" class="sec">
+    <h2>2 疾患構成・シェア</h2>
+    <div class="grid2">
+      <div class="card" data-chart="mdc-share"><h3>MDC別のシェア（比較対象内） <span class="note">病院所在地ベース</span></h3><div class="chart tall" id="c-mdc-share"></div></div>
+      <div class="card" data-chart="mdc-mix"><h3>MDC構成比：自院と比較対象全体</h3><div class="chart tall" id="c-mdc-mix"></div></div>
+    </div>
+    <div class="card" data-chart="heat"><h3>病院×MDCの患者数 <span class="note">色＝各MDCの比較対象内シェア</span></h3><div class="chart xtall" id="c-heat"></div></div>
+    <div class="card" data-chart="flow" id="card-flow"><h3>医療圏の患者の流出入（MDC別） <span class="note">医療圏内の病院の患者数 ÷ 医療圏に住む患者の数 − 1</span></h3><div class="chart tall" id="c-flow"></div>
+      <p class="muted small">プラスは他の医療圏からの流入超過、マイナスは他の医療圏への流出超過を表します。患者住所地ベースの数は全調査対象病院（出来高算定病院を含む）の退院患者です。郵便番号が複数の医療圏にまたがる場合は、それぞれに計上されています。</p></div>
+  </section>
+
+  <section id="s-eff" class="sec">
+    <h2>3 効率性・複雑性</h2>
+    <div class="grid2">
+      <div class="card" data-chart="sc-eff"><h3>患者構成の指標と在院日数の指標</h3><div class="chart tall" id="c-sc-eff"></div>
+        <p class="muted small">在院日数の指標：1より大きいほど、同じ患者構成でも在院日数が短い（効率的）。患者構成の指標：1より大きいほど、在院日数が長くなりやすい患者構成（複雑）。いずれも全国平均（11.56日）が基準です。</p></div>
+      <div class="card" data-chart="mdc-eff"><h3>自院のMDC別 在院日数の指標</h3><div class="chart tall" id="c-mdc-eff"></div></div>
+    </div>
+    <div class="card" data-chart="rank-los"><h3>平均在院日数（令和6年度）</h3><div class="chart tall" id="c-rank-los"></div></div>
+  </section>
+
+  <section id="s-emg" class="sec">
+    <h2>4 救急</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-amb"><h3>救急車搬送の件数（1か月あたり）</h3><div class="chart tall" id="c-rank-amb"></div></div>
+      <div class="card" data-chart="sc-amb"><h3>救急車搬送と手術の件数</h3><div class="chart tall" id="c-sc-amb"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="rank-emg"><h3>救急医療入院の件数（1か月あたり）</h3><div class="chart tall" id="c-rank-emg"></div></div>
+      <div class="card" data-chart="mdc-emg"><h3>自院のMDC別 救急医療入院 <span class="note">年間件数</span></h3><div class="chart tall" id="c-mdc-emg"></div></div>
+    </div>
+  </section>
+
+  <section id="s-link" class="sec">
+    <h2>5 地域連携</h2>
+    <div class="card" data-chart="rank-ref"><h3>他院からの紹介率</h3><div class="chart tall" id="c-rank-ref"></div></div>
+    <div class="grid2">
+      <div class="card" data-chart="route"><h3>入院経路</h3><div class="chart" id="c-route"></div></div>
+      <div class="card" data-chart="dest"><h3>退院先</h3><div class="chart" id="c-dest"></div></div>
+    </div>
+  </section>
+
+  <section id="s-adv" class="sec">
+    <h2>6 手術・高度医療</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-surg"><h3>手術ありの件数</h3><div class="chart tall" id="c-rank-surg"></div></div>
+      <div class="card" data-chart="rank-ga"><h3>全身麻酔ありの件数</h3><div class="chart tall" id="c-rank-ga"></div></div>
+    </div>
+    <div class="card" data-chart="adv-rate"><h3>手術・化学療法・放射線療法・全身麻酔の割合：自院と比較対象全体</h3><div class="chart" id="c-adv-rate"></div></div>
+  </section>
+
+  <section id="s-qual" class="sec">
+    <h2>7 医療の質</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-death"><h3>死亡退院率 <span class="note">低いほど上位</span></h3><div class="chart tall" id="c-rank-death"></div></div>
+      <div class="card" data-chart="rank-readm"><h3>4週以内の計画外再入院率 <span class="note">低いほど上位</span></h3><div class="chart tall" id="c-rank-readm"></div></div>
+    </div>
+    <p class="muted small">死亡退院率は患者の重症度や疾患構成に大きく左右されるため、単純な比較には注意が必要です。入院から24時間以内の死亡は退院患者調査の分析対象から除かれています（件数は比較表を参照）。</p>
+  </section>
+
+  <section id="s-drug" class="sec">
+    <h2>8 薬剤</h2>
+    <div class="card" data-chart="rank-gen"><h3>後発医薬品の使用割合（一般病棟）</h3><div class="chart tall" id="c-rank-gen"></div></div>
+  </section>
+
+  <section id="s-table" class="sec">
+    <h2>比較表 <button type="button" id="dl" class="ghost small">CSVダウンロード</button></h2>
+    <div class="tablewrap"><table id="cmp" class="cmp"></table></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <h2>データと注意事項</h2>
+  <ul>
+    <li>出典：厚生労働省「令和6年度DPC導入の影響評価に係る調査『退院患者調査』の結果報告」、地方厚生局「コード内容別医療機関一覧表」（令和8年10月1日時点）、国土交通省「国土数値情報（医療圏データ）」。これらを加工して作成しています。</li>
+    <li>集計対象は令和6年6月〜令和7年5月に退院（転棟）した患者です。在院日数1日以下、24時間以内の死亡などは分析対象外です。</li>
+    <li>10件未満の値は公表データで秘匿されているため、空欄（–）で表示しています。</li>
+    <li>二次医療圏は第8次医療計画の330圏です。病院は所在地の市区町村で割り当てています。</li>
+    <li><strong>法人（開設者）は令和8年10月時点</strong>の地方厚生局の一覧表から、施設名・所在地・病床数で照合しました。診療実績（令和6年度）とは時点が異なり、その間の統合・譲渡は反映されていません。照合できなかった施設は「法人不明」です（<a href="data/owner_review.csv">照合できなかった施設の一覧</a>）。法人は法人格の単位で、同名の別法人は代表者名で区別しています。</li>
+    <li>「比較対象全体」は比較対象病院の合計（件数で重み付け）、「他院平均」は自院を除く比較対象病院の単純平均です。</li>
+    <li id="built"></li>
+  </ul>
+</footer>
+<div id="tip" class="tip" role="tooltip" hidden></div>
+</div>
+<script src="vendor/echarts.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
