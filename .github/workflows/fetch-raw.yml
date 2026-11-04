@@ -1,0 +1,32 @@
+name: fetch-raw
+# 一次データ（厚労省・国土数値情報）を取得し、raw ブランチへ保存する
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [scripts/fetch.py, .github/workflows/fetch-raw.yml]
+permissions:
+  contents: write
+concurrency:
+  group: fetch-raw
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests beautifulsoup4
+      - name: Fetch
+        run: python scripts/fetch.py raw 2>&1 | tee fetch_log.txt
+      - name: Push to raw branch
+        run: |
+          cp fetch_log.txt raw/
+          cd raw
+          git init -q -b raw
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "raw data $(date -u +%FT%TZ)"
+          git -c http.postBuffer=524288000 push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" raw
