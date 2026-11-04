@@ -105,12 +105,21 @@ def fetch_kouseikyoku():
                 print("FAILED file", k, href, e, flush=True)
         print("kousei", k, got, flush=True)
 
+DPC_TABLE_TOP = "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000198757_00008.html"  # 令和6年度 DPC電子点数表
+
+def fetch_dpc_table():
+    """手術区分コード（DPC 9〜10桁）→ Kコード・手術名 の対応に使う。調査期間（令和6年6月〜）の開始時点の正式版を優先"""
+    L = [l for l in links(DPC_TABLE_TOP) if "正式版" in l["text"] and re.search(r"\.(zip|xlsx?)$", l["href"], re.I)]
+    pick = next((l for l in L if "令和6年5月21日" in l["text"]), L[-1] if L else None)
+    if not pick: raise RuntimeError("DPC電子点数表のリンクが見つかりません")
+    save("dpc_table", pick["href"].rsplit("/", 1)[-1], pick["href"], {"text": pick["text"]})
+
 def fetch_geo():
     save("geo", "A38-20_GML.zip", "https://nlftp.mlit.go.jp/ksj/gml/data/A38/A38-20/A38-20_GML.zip", {})
 
 if __name__ == "__main__":
     errs = []
-    for f in (fetch_dpc, fetch_navii, fetch_kouseikyoku, fetch_geo):
+    for f in (fetch_dpc, fetch_dpc_table, fetch_navii, fetch_kouseikyoku, fetch_geo):
         try: f()
         except Exception as e:
             print("FAILED", f.__name__, e, flush=True); errs.append(f"{f.__name__}: {e}")
