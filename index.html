@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DPC退院患者調査ダッシュボード（令和6年度）</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="viz-root">
+<header class="page-head">
+  <h1>DPC退院患者調査ダッシュボード <span class="sub">令和6年度（令和6年6月〜令和7年5月退院）</span></h1>
+  <p class="lead">自院を選ぶと、同じ二次医療圏の病院、同じ法人の病院、または病床数・病床機能が近い類似病院と比較できます。</p>
+</header>
+
+<section class="filters" aria-label="表示条件">
+  <div class="f-item f-search">
+    <label for="q">自院</label>
+    <div class="combo">
+      <input id="q" type="search" autocomplete="off" placeholder="病院名で検索（例：日赤、市民病院）" role="combobox" aria-expanded="false" aria-controls="q-list">
+      <ul id="q-list" class="combo-list" role="listbox" hidden></ul>
+    </div>
+  </div>
+  <div class="f-item">
+    <span class="f-label" id="axis-label">比較軸</span>
+    <div class="seg" role="radiogroup" aria-labelledby="axis-label">
+      <button type="button" role="radio" data-axis="area" aria-checked="true">二次医療圏</button>
+      <button type="button" role="radio" data-axis="corp" aria-checked="false">法人</button>
+      <button type="button" role="radio" data-axis="peer" aria-checked="false">類似病院</button>
+    </div>
+  </div>
+  <div class="f-item" id="peer-region" hidden>
+    <span class="f-label" id="region-label">類似病院の地域</span>
+    <div class="seg" role="radiogroup" aria-labelledby="region-label">
+      <button type="button" role="radio" data-region="all" aria-checked="true">全国</button>
+      <button type="button" role="radio" data-region="reg" aria-checked="false">同じ地方</button>
+      <button type="button" role="radio" data-region="pref" aria-checked="false">同じ都道府県</button>
+    </div>
+  </div>
+  <div class="f-item" id="peer-n" hidden>
+    <label for="peer-n-num">類似病院の数</label>
+    <div class="nbox">
+      <input type="range" id="peer-n-range" min="5" max="200" step="1" value="30" aria-label="類似病院の数（スライダー）">
+      <input type="number" id="peer-n-num" min="5" max="500" step="1" value="30" inputmode="numeric">
+      <span class="muted small">施設</span>
+    </div>
+  </div>
+  <div class="f-item">
+    <span class="f-label" id="scope-label">比較対象</span>
+    <div class="seg" role="radiogroup" aria-labelledby="scope-label">
+      <button type="button" role="radio" data-scope="dpc" aria-checked="true">DPC参加・準備病院</button>
+      <button type="button" role="radio" data-scope="all" aria-checked="false">出来高算定病院も含む</button>
+    </div>
+  </div>
+  <div class="f-item f-theme">
+    <button type="button" id="theme" class="ghost" aria-label="表示テーマの切り替え">表示：自動</button>
+  </div>
+</section>
+
+<div id="empty" class="empty">
+  <p>上の検索欄から自院を選んでください。</p>
+  <p class="muted">全国6,370施設（DPC参加1,765・準備228・出来高算定4,377）を収録しています。</p>
+</div>
+
+<main id="main" hidden>
+  <section class="selfcard" aria-live="polite">
+    <div>
+      <h2 id="self-name"></h2>
+      <p id="self-meta" class="muted"></p>
+    </div>
+    <div class="group-chip" id="group-chip"></div>
+  </section>
+
+  <details class="card peerbox" id="peer-box" hidden>
+    <summary><b>類似病院の選び方と一覧</b> <span class="muted small" id="peer-sum"></span></summary>
+    <p class="muted small">候補：自院と入院基本料の系統が同じ病院（特定機能病院／急性期一般1／急性期一般2〜3／急性期一般4〜6／地域一般／専門病院／届出なし）で、上の「比較対象」と「類似病院の地域」の条件に合うもの。<br>
+    近さ（距離）＝ |log(候補の総病床数 ÷ 自院の総病床数)| ＋ 病床構成5区分（DPC算定・回復期リハ・地域包括ケア／地域包括医療・療養・精神）の割合の差の絶対値の合計。距離が小さい順に指定した数を選んでいます。病床数は施設概要表の医療保険の病床数です。</p>
+    <div class="tablewrap"><table id="peer-table" class="cmp"></table></div>
+  </details>
+
+  <nav class="toc" aria-label="セクション">
+    <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
+    <a href="#s-emg">4 救急</a><a href="#s-link">5 地域連携</a><a href="#s-adv">6 手術・高度医療</a><a href="#s-qual">7 医療の質</a>
+    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-sev">10 重症度・リハビリ</a><a href="#s-table">比較表</a>
+  </nav>
+
+  <section id="s-summary" class="sec">
+    <h2>サマリー</h2>
+    <div id="kpis" class="kpis"></div>
+    <div class="grid2">
+      <div class="card" data-chart="radar"><h3>比較対象の平均との比較 <span class="note">他院平均＝100</span></h3><div class="chart" id="c-radar"></div></div>
+      <div class="card"><h3>比較対象内の順位</h3><div id="ranks" class="ranks"></div></div>
+    </div>
+  </section>
+
+  <section id="s-scale" class="sec">
+    <h2>1 規模・概要</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-n"><h3>退院患者数（令和6年度）</h3><div class="chart tall" id="c-rank-n"></div></div>
+      <div class="card" data-chart="sc-beds"><h3>病床数と退院患者数</h3><div class="chart tall" id="c-sc-beds"></div></div>
+    </div>
+    <div class="card" data-chart="beds"><h3>病床の構成</h3><div class="chart" id="c-beds"></div></div>
+  </section>
+
+  <section id="s-mdc" class="sec">
+    <h2>2 疾患構成・シェア</h2>
+    <div class="grid2">
+      <div class="card" data-chart="mdc-share"><h3>MDC別のシェア（比較対象内） <span class="note">病院所在地ベース</span></h3><div class="chart tall" id="c-mdc-share"></div></div>
+      <div class="card" data-chart="mdc-mix"><h3>MDC構成比：自院と比較対象全体</h3><div class="chart tall" id="c-mdc-mix"></div></div>
+    </div>
+    <div class="card" data-chart="heat"><h3>病院×MDCの患者数 <span class="note">色＝各MDCの比較対象内シェア</span></h3><div class="chart xtall" id="c-heat"></div></div>
+    <div class="card" data-chart="flow" id="card-flow"><h3>医療圏の患者の流出入（MDC別） <span class="note">医療圏内の病院の患者数 ÷ 医療圏に住む患者の数 − 1</span></h3><div class="chart tall" id="c-flow"></div>
+      <p class="muted small">プラスは他の医療圏からの流入超過、マイナスは他の医療圏への流出超過を表します。患者住所地ベースの数は全調査対象病院（出来高算定病院を含む）の退院患者です。郵便番号が複数の医療圏にまたがる場合は、それぞれに計上されています。</p></div>
+  </section>
+
+  <section id="s-eff" class="sec">
+    <h2>3 効率性・複雑性</h2>
+    <div class="grid2">
+      <div class="card" data-chart="sc-eff"><h3>患者構成の指標と在院日数の指標</h3><div class="chart tall" id="c-sc-eff"></div>
+        <p class="muted small">在院日数の指標：1より大きいほど、同じ患者構成でも在院日数が短い（効率的）。患者構成の指標：1より大きいほど、在院日数が長くなりやすい患者構成（複雑）。いずれも全国平均（11.56日）が基準です。</p></div>
+      <div class="card" data-chart="mdc-eff"><h3>自院のMDC別 在院日数の指標</h3><div class="chart tall" id="c-mdc-eff"></div></div>
+    </div>
+    <div class="card" data-chart="rank-los"><h3>平均在院日数（令和6年度）</h3><div class="chart tall" id="c-rank-los"></div></div>
+  </section>
+
+  <section id="s-emg" class="sec">
+    <h2>4 救急</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-amb"><h3>救急車搬送の件数（1か月あたり）</h3><div class="chart tall" id="c-rank-amb"></div></div>
+      <div class="card" data-chart="sc-amb"><h3>救急車搬送と手術の件数</h3><div class="chart tall" id="c-sc-amb"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="rank-emg"><h3>救急医療入院の件数（1か月あたり）</h3><div class="chart tall" id="c-rank-emg"></div></div>
+      <div class="card" data-chart="mdc-emg"><h3>自院のMDC別 救急医療入院 <span class="note">年間件数</span></h3><div class="chart tall" id="c-mdc-emg"></div></div>
+    </div>
+    <h3 class="subhead" id="s-adm">入院区分（予定・救急）のMDC別分析</h3>
+    <div class="method">
+      <p><b>区分</b>：様式1の「予定・救急医療入院」による4区分（予定入院／化学療法実施の再入院／予定外入院／救急医療入院）。入院経路が家庭・他院・介護施設等からの患者が対象で、4区分は重なりません。</p>
+      <p><b>推計の方法</b>：公表データでは10件未満が秘匿（–）されています。MDCごとに4区分のうち1区分だけが秘匿されている場合は、「推計値 ＝ 同じMDCの患者数の合計 −（公表されている3区分の合計）」で求め、<b>推計</b>と表示しています。合計には、同じ対象で集計された参考資料2(4)「入院から24時間以内の死亡」のMDC別「合計」を使っています（4区分がすべて公表されているMDCでは、96%で差が2件以内）。推計値が0〜9件の範囲に収まらない場合と、2区分以上が秘匿されている場合は推計せず、「秘匿（内訳不明）」として扱います。合計そのものが秘匿されているMDCは集計に含みません。</p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="adm-self"><h3>自院のMDC別 入院区分の構成</h3><div class="chart tall" id="c-adm-self"></div></div>
+      <div class="card" data-chart="adm-group"><h3>比較対象全体のMDC別 入院区分の構成</h3><div class="chart tall" id="c-adm-group"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="adm-sc"><h3>予定入院シェアと救急医療入院シェア（MDC別） <span class="note">比較対象内のシェア</span></h3><div class="chart tall" id="c-adm-sc"></div></div>
+      <div class="card" data-chart="adm-rate"><h3>救急医療入院の割合（MDC別）：自院と比較対象全体</h3><div class="chart tall" id="c-adm-rate"></div></div>
+    </div>
+    <div class="card surg-pick">
+      <h3>MDCと区分を選んで比較</h3>
+      <div class="pick-row">
+        <div class="f-item"><label for="adm-mdc">MDC</label><select id="adm-mdc" class="sel"></select></div>
+        <div class="f-item"><label for="adm-kind">区分</label><select id="adm-kind" class="sel"></select></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="adm-rank"><h3 id="adm-rank-title">件数の比較</h3><div class="chart tall" id="c-adm-rank"></div></div>
+      <div class="card" data-chart="adm-comp"><h3 id="adm-comp-title">入院区分の構成</h3><div class="chart tall" id="c-adm-comp"></div></div>
+    </div>
+    <h3 class="subhead" id="s-ambm">救急車による搬送のMDC別分析</h3>
+    <div class="method">
+      <p><b>対象</b>：様式1の「救急車による搬送の有無」が「あり」の患者（入院経路が家庭・他院・介護施設等からの患者）。「搬送率」は、救急車による搬送の件数 ÷ 同じMDCの合計件数です。</p>
+      <p><b>10件未満の扱い</b>：搬送件数が10件未満のセルは公表データで秘匿（–）されており、「10件未満」と表示します。比較対象全体の搬送率・シェア・構成比は、搬送件数が公表されているセルだけで計算しています（秘匿されたセルは分子・分母の両方から除外）。そのため、搬送件数の少ない病院が多いMDCでは、比較対象全体の値がやや高めに出ることがあります。</p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="ambm-rate"><h3>救急車搬送率（MDC別）：自院と比較対象全体</h3><div class="chart tall" id="c-ambm-rate"></div></div>
+      <div class="card" data-chart="ambm-share"><h3>救急車搬送のシェア（MDC別） <span class="note">比較対象内</span></h3><div class="chart tall" id="c-ambm-share"></div></div>
+    </div>
+    <div class="card" data-chart="ambm-mix"><h3>救急車搬送の疾患構成：自院と比較対象全体 <span class="note">救急車で搬送された患者のMDC別の内訳</span></h3><div class="chart tall" id="c-ambm-mix"></div></div>
+    <div class="card surg-pick">
+      <h3>MDCを選んで比較</h3>
+      <div class="pick-row"><div class="f-item"><label for="ambm-mdc">MDC</label><select id="ambm-mdc" class="sel"></select></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="ambm-rank"><h3 id="ambm-rank-title">救急車搬送の件数</h3><div class="chart tall" id="c-ambm-rank"></div></div>
+      <div class="card" data-chart="ambm-sc"><h3 id="ambm-sc-title">合計件数と救急車搬送率</h3><div class="chart tall" id="c-ambm-sc"></div></div>
+    </div>
+  </section>
+
+  <section id="s-link" class="sec">
+    <h2>5 地域連携</h2>
+    <div class="card" data-chart="rank-ref"><h3>他院からの紹介率</h3><div class="chart tall" id="c-rank-ref"></div></div>
+    <div class="grid2">
+      <div class="card" data-chart="route"><h3>入院経路</h3><div class="chart" id="c-route"></div></div>
+      <div class="card" data-chart="dest"><h3>退院先</h3><div class="chart" id="c-dest"></div></div>
+    </div>
+  </section>
+
+  <section id="s-adv" class="sec">
+    <h2>6 手術・高度医療</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-surg"><h3>手術ありの件数</h3><div class="chart tall" id="c-rank-surg"></div></div>
+      <div class="card" data-chart="rank-ga"><h3>全身麻酔ありの件数</h3><div class="chart tall" id="c-rank-ga"></div></div>
+    </div>
+    <div class="card" data-chart="adv-rate"><h3>手術・化学療法・放射線療法・全身麻酔の割合：自院と比較対象全体</h3><div class="chart" id="c-adv-rate"></div></div>
+  </section>
+
+  <section id="s-qual" class="sec">
+    <h2>7 医療の質</h2>
+    <div class="grid2">
+      <div class="card" data-chart="rank-death"><h3>死亡退院率 <span class="note">低いほど上位</span></h3><div class="chart tall" id="c-rank-death"></div></div>
+      <div class="card" data-chart="rank-readm"><h3>4週以内の計画外再入院率 <span class="note">低いほど上位</span></h3><div class="chart tall" id="c-rank-readm"></div></div>
+    </div>
+    <p class="muted small">死亡退院率は患者の重症度や疾患構成に大きく左右されるため、単純な比較には注意が必要です。入院から24時間以内の死亡は退院患者調査の分析対象から除かれています（件数は比較表を参照）。</p>
+  </section>
+
+  <section id="s-drug" class="sec">
+    <h2>8 薬剤</h2>
+    <div class="card" data-chart="rank-gen"><h3>後発医薬品の使用割合（一般病棟）</h3><div class="chart tall" id="c-rank-gen"></div></div>
+  </section>
+
+  <section id="s-surg" class="sec">
+    <h2>9 手術別の実績 <span class="note">DPC6桁の疾患 × 手術区分（診断群分類の9〜10桁目）ごとの件数・平均在院日数</span></h2>
+    <p class="muted small">10件未満は秘匿されているため、病院ごとの件数が表示されない区分があります。比較対象の合計・シェアは公表されている件数だけで計算しています。手術名は診断群分類（DPC）電子点数表（令和6年度）の定義によります。</p>
+    <div class="card" data-chart="surg-top"><h3>自院の主要な手術（件数の多い順）</h3><div class="chart tall" id="c-surg-top"></div></div>
+    <div class="card surg-pick">
+      <h3>手術を選んで比較</h3>
+      <div class="f-item f-search">
+        <label for="sq">手術区分（疾患名・手術名・Kコードで検索）</label>
+        <div class="combo">
+          <input id="sq" type="search" autocomplete="off" placeholder="例：ステント、K5493、人工関節、白内障" role="combobox" aria-expanded="false" aria-controls="sq-list">
+          <ul id="sq-list" class="combo-list" role="listbox" hidden></ul>
+        </div>
+      </div>
+      <p id="surg-info" class="surg-info"></p>
+      <p id="surg-k" class="muted small"></p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="surg-rank"><h3>件数の比較</h3><div class="chart tall" id="c-surg-rank"></div></div>
+      <div class="card" data-chart="surg-sc"><h3>件数と平均在院日数</h3><div class="chart tall" id="c-surg-sc"></div></div>
+    </div>
+    <div class="card" data-chart="surg-heat"><h3>手術シェアのヒートマップ <span class="note">列＝自院の主要な手術、色＝比較対象内のシェア</span></h3><div class="chart xtall" id="c-surg-heat"></div></div>
+  </section>
+
+  <section id="s-sev" class="sec">
+    <h2>10 重症度・リハビリ</h2>
+    <p class="muted small">公表されているのは「入力状況」の集計で、対象患者の点数帯・分類ごとの割合です（平均点や改善度そのものは公表されていません）。「約○人」は、入力対象の割合 × 一般病棟に入院があった患者数で推計したおおよその人数です。10件未満は秘匿されています。患者構成の調整はしていません。</p>
+    <h3 class="subhead">回復期リハビリテーション（FIM）</h3>
+    <p id="fim-info" class="surg-info"></p>
+    <p class="muted small" id="fim-scope-note"></p>
+    <div class="grid2">
+      <div class="card" data-chart="fim-sc"><h3>入棟時の重度患者の割合と退棟時の高得点帯の割合 <span class="note">運動項目</span></h3><div class="chart tall" id="c-fim-sc"></div></div>
+      <div class="card" data-chart="fim-rank"><h3>運動FIM 53点以上の割合の増加 <span class="note">退棟時 − 入棟時（改善の目安）</span></h3><div class="chart tall" id="c-fim-rank"></div></div>
+    </div>
+    <div class="f-item fim-toggle">
+      <span class="f-label" id="fim-kind-label">FIMの項目</span>
+      <div class="seg" role="radiogroup" aria-labelledby="fim-kind-label">
+        <button type="button" role="radio" data-fim="motor" aria-checked="true">運動項目</button>
+        <button type="button" role="radio" data-fim="cog" aria-checked="false">認知項目</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="fim-in"><h3>入棟時の点数帯</h3><div class="chart" id="c-fim-in"></div></div>
+      <div class="card" data-chart="fim-out"><h3>退棟時の点数帯</h3><div class="chart" id="c-fim-out"></div></div>
+    </div>
+    <h3 class="subhead">疾患別の重症度</h3>
+    <div class="card surg-pick">
+      <div class="f-item">
+        <label for="sev-sel">項目</label>
+        <select id="sev-sel" class="sel"></select>
+      </div>
+      <p id="sev-info" class="surg-info"></p>
+      <p id="sev-note" class="muted small"></p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="sev-rank"><h3 id="sev-rank-title">代表指標の比較</h3><div class="chart tall" id="c-sev-rank"></div></div>
+      <div class="card" data-chart="sev-comp"><h3 id="sev-comp-title">分類ごとの割合</h3><div class="chart tall" id="c-sev-comp"></div></div>
+    </div>
+  </section>
+
+  <section id="s-table" class="sec">
+    <h2>比較表 <button type="button" id="dl" class="ghost small">CSVダウンロード</button></h2>
+    <div class="tablewrap"><table id="cmp" class="cmp"></table></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <h2>データと注意事項</h2>
+  <ul>
+    <li>出典：厚生労働省「令和6年度DPC導入の影響評価に係る調査『退院患者調査』の結果報告」、厚生労働省「診断群分類（DPC）電子点数表」（令和6年度）、地方厚生局「コード内容別医療機関一覧表」（令和8年10月1日時点）、国土交通省「国土数値情報（医療圏データ）」。これらを加工して作成しています。</li>
+    <li>集計対象は令和6年6月〜令和7年5月に退院（転棟）した患者です。在院日数1日以下、24時間以内の死亡などは分析対象外です。</li>
+    <li>10件未満の値は公表データで秘匿されているため、空欄（–）で表示しています。</li>
+    <li>二次医療圏は第8次医療計画の330圏です。病院は所在地の市区町村で割り当てています。</li>
+    <li><strong>法人（開設者）は令和8年10月時点</strong>の地方厚生局の一覧表から、施設名・所在地・病床数で照合しました。診療実績（令和6年度）とは時点が異なり、その間の統合・譲渡は反映されていません。照合できなかった施設は「法人不明」です（<a href="data/owner_review.csv">照合できなかった施設の一覧</a>）。法人は法人格の単位で、同名の別法人は代表者名で区別しています。</li>
+    <li>「比較対象全体」は比較対象病院の合計（件数で重み付け）、「他院平均」は自院を除く比較対象病院の単純平均です。</li>
+    <li id="built"></li>
+  </ul>
+</footer>
+<div id="tip" class="tip" role="tooltip" hidden></div>
+</div>
+<script src="vendor/echarts.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
