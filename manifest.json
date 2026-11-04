@@ -1,0 +1,833 @@
+{
+ "files": [
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__施設概要表_678KB__001717940.xlsx",
+   "bytes": 694194,
+   "url": "https://www.mhlw.go.jp/content/12404000/001717940.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "施設概要表［678KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１_分析対象外としたデータの状況_692KB__001718225.xlsx",
+   "bytes": 707923,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718225.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１）分析対象外としたデータの状況［692KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__２_在院日数の状況_2.4MB__001718055.xlsx",
+   "bytes": 2423391,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718055.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（２）在院日数の状況［2.4MB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__３_在院日数の平均の差_747KB__001718056.xlsx",
+   "bytes": 763994,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718056.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（３）在院日数の平均の差［747KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__４_救急車による搬送の有無_416KB__001718058.xlsx",
+   "bytes": 425118,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718058.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（４）救急車による搬送の有無［416KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__５_救急医療入院_575KB__001718059.xlsx",
+   "bytes": 588523,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718059.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（５）救急医療入院［575KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__６_他院よりの紹介の有無_414KB__001718061.xlsx",
+   "bytes": 423754,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718061.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（６）他院よりの紹介の有無［414KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__７_入院経路及び退院先の状況_1.8MB__001718063.xlsx",
+   "bytes": 1842023,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718063.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（７）入院経路及び退院先の状況［1.8MB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__８_退院時転帰の状況_937KB__001718065.xlsx",
+   "bytes": 958890,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718065.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（８）退院時転帰の状況［937KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__９_再入院の状況_784KB__001718066.xlsx",
+   "bytes": 801974,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718066.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（９）再入院の状況［784KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１０_MDC構成比_13KB__001718068.xlsx",
+   "bytes": 13025,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718068.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１０）MDC構成比［13KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１１_施設別MDC比率_1.1MB__001718069.xlsx",
+   "bytes": 1147395,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718069.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１１）施設別MDC比率［1.1MB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１２_診断群分類別在院日数_920KB__001718072.xlsx",
+   "bytes": 941875,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718072.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１２）診断群分類別在院日数［920KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１３_在院日数の平均の差_MDC別_5.1MB__001718073.xlsx",
+   "bytes": 5340947,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718073.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１３）在院日数の平均の差_MDC別［5.1MB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１４_手術化学療法放射線療法全身麻酔について_731KB__001718074.xlsx",
+   "bytes": 747961,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718074.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１４）手術化学療法放射線療法全身麻酔について［731KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１５_精神病棟の集計_419KB__001718075.xlsx",
+   "bytes": 428925,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718075.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１５）精神病棟の集計［419KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１６_様式１について_11KB__001718076.xlsx",
+   "bytes": 10674,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718076.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１６）様式１について［11KB］"
+  },
+  {
+   "path": "dpc/※一部病院の告示番号に誤りがあったため、__１７_医療圏別MDC患者数_53KB__001718077.xlsx",
+   "bytes": 53805,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718077.xlsx",
+   "heading": "※一部病院の告示番号に誤りがあったため、データ差替え（令和８年６月30日） ・施設概要表 施設概要表［678KB］ ・参考資料１",
+   "text": "（１７）医療圏別MDC患者数［53KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__１_MDC別医療機関別件数_割合_2.5MB__001718078.xlsx",
+   "bytes": 2573930,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718078.xlsx",
+   "heading": "・参考資料２",
+   "text": "（１）MDC別医療機関別件数（割合）［2.5MB］"
+  },
+  {
+   "path": "dpc/・参考資料２__２_予定・救急医療入院医療機関別MDC別集計_1.8MB__001718079.xlsx",
+   "bytes": 1793875,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718079.xlsx",
+   "heading": "・参考資料２",
+   "text": "（２）予定・救急医療入院医療機関別MDC別集計［1.8MB］"
+  },
+  {
+   "path": "dpc/・参考資料２__３_救急車による搬送の有無の医療機関別MDC別集計_995KB__001718080.xlsx",
+   "bytes": 1018290,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718080.xlsx",
+   "heading": "・参考資料２",
+   "text": "（３）救急車による搬送の有無の医療機関別MDC別集計［995KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__４_入院から24時間以内の死亡の有無の医療機関別MDC別集計_979KB__001718081.xlsx",
+   "bytes": 1001977,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718081.xlsx",
+   "heading": "・参考資料２",
+   "text": "（４）入院から24時間以内の死亡の有無の医療機関別MDC別集計［979KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__５_診断群分類毎の集計_9.9MB__001718086.xlsx",
+   "bytes": 10292974,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718086.xlsx",
+   "heading": "・参考資料２",
+   "text": "（５）診断群分類毎の集計［9.9MB］"
+  },
+  {
+   "path": "dpc/・参考資料２__６_化学療法のレジメン_2.7MB__001718087.pdf",
+   "bytes": 2783129,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718087.pdf",
+   "heading": "・参考資料２",
+   "text": "（６）化学療法のレジメン［2.7MB］"
+  },
+  {
+   "path": "dpc/・参考資料２__７_疾患別手術別集計_施設類型別_192KB__001718105.xlsx",
+   "bytes": 195774,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718105.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_施設類型別［192KB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC01__001718106.xlsx",
+   "bytes": 2555001,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718106.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC01［2.5MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC02__001718107.xlsx",
+   "bytes": 2854832,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718107.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC02［2.8MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC03__001718109.xlsx",
+   "bytes": 1970269,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718109.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC03［1.9MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC04__001718115.xlsx",
+   "bytes": 2625418,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718115.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC04［2.6MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC05__001718116.xlsx",
+   "bytes": 3070062,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718116.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC05［3.0MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC06__001718117.xlsx",
+   "bytes": 7640597,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718117.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC06［7.3MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC07__001718118.xlsx",
+   "bytes": 6404999,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718118.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC07［6.2MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC08__001718120.xlsx",
+   "bytes": 1177507,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718120.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC08［1.2MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC09__001718121.xlsx",
+   "bytes": 797333,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718121.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC09［779KB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC10__001718122.xlsx",
+   "bytes": 2137943,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718122.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC10［2.1MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC11__001718123.xlsx",
+   "bytes": 3374697,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718123.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC11［3.3MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC12__001718124.xlsx",
+   "bytes": 4078474,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718124.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC12［3.9MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC13__001718125.xlsx",
+   "bytes": 1321747,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718125.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC13［1.3MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC14__001718126.xlsx",
+   "bytes": 3815316,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718126.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC14［3.7MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC15__001718127.xlsx",
+   "bytes": 333701,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718127.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC15［326KB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC16__001718128.xlsx",
+   "bytes": 5803103,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718128.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC16［5.6MB］"
+  },
+  {
+   "path": "dpc_surg/surg_MDC18__001718129.xlsx",
+   "bytes": 541495,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718129.xlsx",
+   "heading": "・参考資料２",
+   "text": "（７）疾患別手術別集計_MDC18［529KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__８_疾患別手術有無別処置1有無別集計_施設類型別_240KB__001718130.xlsx",
+   "bytes": 245152,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718130.xlsx",
+   "heading": "・参考資料２",
+   "text": "（８）疾患別手術有無別処置1有無別集計_施設類型別［240KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__９_疾患別手術有無別処置2有無別集計_施設類型別_240KB__001718194.xlsx",
+   "bytes": 245152,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718194.xlsx",
+   "heading": "・参考資料２",
+   "text": "（９）疾患別手術有無別処置2有無別集計_施設類型別［240KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__１０_MDC別手術有無別処置2の有無別集計_施設類型別_42KB__001718215.xlsx",
+   "bytes": 42781,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718215.xlsx",
+   "heading": "・参考資料２",
+   "text": "（１０）MDC別手術有無別処置2の有無別集計_施設類型別［42KB］"
+  },
+  {
+   "path": "dpc/・参考資料２__１０_MDC別手術有無別処置2の有無別集計_10.4MB__001718216.xlsx",
+   "bytes": 10895380,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718216.xlsx",
+   "heading": "・参考資料２",
+   "text": "（１０）MDC別手術有無別処置2の有無別集計［10.4MB］"
+  },
+  {
+   "path": "dpc/・参考資料３__１_再入院再転棟_医療機関別集計_2.3MB__001718217.xlsx",
+   "bytes": 2383498,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718217.xlsx",
+   "heading": "・参考資料３",
+   "text": "（１）再入院再転棟_医療機関別集計［2.3MB］"
+  },
+  {
+   "path": "dpc/・参考資料３__２_後発医薬品の使用状況_302KB__001718218.xlsx",
+   "bytes": 308862,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718218.xlsx",
+   "heading": "・参考資料３",
+   "text": "（２）後発医薬品の使用状況［302KB］"
+  },
+  {
+   "path": "dpc/・参考資料３__３_特定抗菌薬の使用状況_904KB__001718219.xlsx",
+   "bytes": 925535,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718219.xlsx",
+   "heading": "・参考資料３",
+   "text": "（３）特定抗菌薬の使用状況［904KB］"
+  },
+  {
+   "path": "dpc/・参考資料３__４_FIMの入力状況_754KB__001718220.xlsx",
+   "bytes": 771967,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718220.xlsx",
+   "heading": "・参考資料３",
+   "text": "（４）FIMの入力状況［754KB］"
+  },
+  {
+   "path": "dpc/・参考資料３__５_要介護度の入力状況_604KB__001718221.xlsx",
+   "bytes": 617539,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718221.xlsx",
+   "heading": "・参考資料３",
+   "text": "（５）要介護度の入力状況［604KB］"
+  },
+  {
+   "path": "dpc/・参考資料３__６_重症度等の入力状況_2.0MB__001718222.xlsx",
+   "bytes": 2092953,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718222.xlsx",
+   "heading": "・参考資料３",
+   "text": "（６）重症度等の入力状況［2.0MB］"
+  },
+  {
+   "path": "dpc/・参考資料３__７_SOFAスコアの入力状況_186KB__001718223.xlsx",
+   "bytes": 190142,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718223.xlsx",
+   "heading": "・参考資料３",
+   "text": "（７）SOFAスコアの入力状況［186KB］"
+  },
+  {
+   "path": "dpc/・参考資料３__８_pSOFAスコアの入力状況_137KB__001718224.xlsx",
+   "bytes": 139993,
+   "url": "https://www.mhlw.go.jp/content/12404000/001718224.xlsx",
+   "heading": "・参考資料３",
+   "text": "（８）pSOFAスコアの入力状況［137KB］"
+  },
+  {
+   "path": "dpc/・その他参考__・参考資料１_分析対象データについて_162KB__001682706.pdf",
+   "bytes": 164893,
+   "url": "https://www.mhlw.go.jp/content/12404000/001682706.pdf",
+   "heading": "・その他参考",
+   "text": "・参考資料１_分析対象データについて［162KB］"
+  },
+  {
+   "path": "dpc/・その他参考__・参考資料２_集計条件について_252KB__001682707.pdf",
+   "bytes": 257107,
+   "url": "https://www.mhlw.go.jp/content/12404000/001682707.pdf",
+   "heading": "・その他参考",
+   "text": "・参考資料２_集計条件について［252KB］"
+  },
+  {
+   "path": "dpc/・その他参考__・参考資料３_集計条件について_202KB__001682708.pdf",
+   "bytes": 206505,
+   "url": "https://www.mhlw.go.jp/content/12404000/001682708.pdf",
+   "heading": "・その他参考",
+   "text": "・参考資料３_集計条件について［202KB］"
+  },
+  {
+   "path": "dpc/・その他参考__・令和６年度退院患者調査報告サマライズペーパー_PDF_106KB__001682709.pdf",
+   "bytes": 108005,
+   "url": "https://www.mhlw.go.jp/content/12404000/001682709.pdf",
+   "heading": "・その他参考",
+   "text": "・令和６年度退院患者調査報告サマライズペーパー（PDF）［106KB］"
+  },
+  {
+   "path": "dpc/・その他参考__・令和６年度退院患者調査報告サマライズペーパー_Excel_15KB__001682711.xlsx",
+   "bytes": 14853,
+   "url": "https://www.mhlw.go.jp/content/12404000/001682711.xlsx",
+   "heading": "・その他参考",
+   "text": "・令和６年度退院患者調査報告サマライズペーパー（Excel）［15KB］"
+  },
+  {
+   "path": "dpc_table/001701572.xlsx",
+   "bytes": 2310243,
+   "url": "https://www.mhlw.go.jp/content/12400000/001701572.xlsx",
+   "text": "診断群分類（DPC）電子点数表（正式版）［2.3MB］"
+  },
+  {
+   "path": "navii/01-1_hospital_facility_info_20260601.csv.zip",
+   "bytes": 761905,
+   "url": "https://www.mhlw.go.jp/content/11121000/01-1_hospital_facility_info_20260601.csv.zip",
+   "text": "病院 (施設票)"
+  },
+  {
+   "path": "navii/definition__001306376.xlsx",
+   "bytes": 70887,
+   "url": "https://www.mhlw.go.jp/content/11121000/001306376.xlsx",
+   "text": "医療情報ネット_オープンデータ定義書（利用者向け）［70KB］"
+  },
+  {
+   "path": "kousei/hokkaido/000502802.xlsx",
+   "bytes": 234061,
+   "url": "https://kouseikyoku.mhlw.go.jp/hokkaido/000502802.xlsx",
+   "heading": "コード内容別医療機関一覧表",
+   "text": "Excel［229KB］"
+  },
+  {
+   "path": "kousei/hokkaido/000502804.xlsx",
+   "bytes": 818058,
+   "url": "https://kouseikyoku.mhlw.go.jp/hokkaido/000502804.xlsx",
+   "heading": "コード内容別医療機関一覧表",
+   "text": "Excel［799KB］"
+  },
+  {
+   "path": "kousei/hokkaido/000502809.xlsx",
+   "bytes": 744996,
+   "url": "https://kouseikyoku.mhlw.go.jp/hokkaido/000502809.xlsx",
+   "heading": "コード内容別医療機関一覧表",
+   "text": "Excel［728KB］"
+  },
+  {
+   "path": "kousei/hokkaido/000502813.xlsx",
+   "bytes": 756643,
+   "url": "https://kouseikyoku.mhlw.go.jp/hokkaido/000502813.xlsx",
+   "heading": "コード内容別医療機関一覧表",
+   "text": "Excel［739KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-ika-r0810.xlsx",
+   "bytes": 1722979,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-ika-r0810.xlsx",
+   "heading": "令和8年10月1日現在",
+   "text": "医科［1.7MB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-ikaheisetsu-r0810.xlsx",
+   "bytes": 14707,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-ikaheisetsu-r0810.xlsx",
+   "heading": "令和8年10月1日現在",
+   "text": "医科併設［15KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0809.xlsx",
+   "bytes": 30010,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0809.xlsx",
+   "heading": "令和8年9月処理分",
+   "text": "Excel［30KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0809.xlsx",
+   "bytes": 27970,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0809.xlsx",
+   "heading": "令和8年9月処理分",
+   "text": "Excel［28KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0808.xlsx",
+   "bytes": 28376,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0808.xlsx",
+   "heading": "令和8年8月処理分",
+   "text": "Excel［28KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0808.xlsx",
+   "bytes": 21256,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0808.xlsx",
+   "heading": "令和8年8月処理分",
+   "text": "Excel［21KB］"
+  },
+  {
+   "path": "kousei/tohoku/jitai-touhoku-r0808.xlsx",
+   "bytes": 7058,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/jitai-touhoku-r0808.xlsx",
+   "heading": "令和8年8月処理分",
+   "text": "Excel［7KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0807.xlsx",
+   "bytes": 29355,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0807.xlsx",
+   "heading": "令和8年7月処理分",
+   "text": "Excel［29KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0807.xlsx",
+   "bytes": 24774,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0807.xlsx",
+   "heading": "令和8年7月処理分",
+   "text": "Excel［25KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0806.xlsx",
+   "bytes": 27590,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0806.xlsx",
+   "heading": "令和8年6月処理分",
+   "text": "Excel［27KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0806.xlsx",
+   "bytes": 27647,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0806.xlsx",
+   "heading": "令和8年6月処理分",
+   "text": "Excel［27KB］"
+  },
+  {
+   "path": "kousei/tohoku/jitai-05akita-r0806.xlsx",
+   "bytes": 13256,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/jitai-05akita-r0806.xlsx",
+   "heading": "令和8年6月処理分",
+   "text": "Excel［13KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0805-.xlsx",
+   "bytes": 33773,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0805-.xlsx",
+   "heading": "令和8年5月処理分",
+   "text": "Excel［33KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0805.xlsx",
+   "bytes": 26685,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0805.xlsx",
+   "heading": "令和8年5月処理分",
+   "text": "Excel［27KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0804.xlsx",
+   "bytes": 37965,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0804.xlsx",
+   "heading": "令和8年4月処理分",
+   "text": "Excel［38KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0804.xlsx",
+   "bytes": 36677,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0804.xlsx",
+   "heading": "令和8年4月処理分",
+   "text": "Excel［36KB］"
+  },
+  {
+   "path": "kousei/tohoku/torikeshi-touhoku-r0804.xlsx",
+   "bytes": 13290,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/torikeshi-touhoku-r0804.xlsx",
+   "heading": "令和8年4月処理分",
+   "text": "Excel［13KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0803.xlsx",
+   "bytes": 36164,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0803.xlsx",
+   "heading": "令和8年3月処理分",
+   "text": "Excel［36KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0803.xlsx",
+   "bytes": 29712,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0803.xlsx",
+   "heading": "令和8年3月処理分",
+   "text": "Excel［30KB］"
+  },
+  {
+   "path": "kousei/tohoku/jitai-touhoku-r0803.xlsx",
+   "bytes": 13299,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/jitai-touhoku-r0803.xlsx",
+   "heading": "令和8年3月処理分",
+   "text": "Excel［13KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0802.xlsx",
+   "bytes": 30367,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0802.xlsx",
+   "heading": "令和8年2月処理分",
+   "text": "Excel［30KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0802.xlsx",
+   "bytes": 28848,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0802.xlsx",
+   "heading": "令和8年2月処理分",
+   "text": "Excel［29KB］"
+  },
+  {
+   "path": "kousei/tohoku/jitai-touhoku-r0802.xlsx",
+   "bytes": 13522,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/jitai-touhoku-r0802.xlsx",
+   "heading": "令和8年2月処理分",
+   "text": "Excel［14KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0801.xlsx",
+   "bytes": 33932,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0801.xlsx",
+   "heading": "令和8年1月処理分",
+   "text": "Excel［34KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0801.xlsx",
+   "bytes": 32316,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0801.xlsx",
+   "heading": "令和8年1月処理分",
+   "text": "Excel［32KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0712.xlsx",
+   "bytes": 26934,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0712.xlsx",
+   "heading": "令和7年12月処理分",
+   "text": "Excel［27KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0712.xlsx",
+   "bytes": 27405,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0712.xlsx",
+   "heading": "令和7年12月処理分",
+   "text": "Excel［27KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0711.xlsx",
+   "bytes": 29349,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0711.xlsx",
+   "heading": "令和7年11月処理分",
+   "text": "Excel［29KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0711.xlsx",
+   "bytes": 26798,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0711.xlsx",
+   "heading": "令和7年11月処理分",
+   "text": "Excel［27KB］"
+  },
+  {
+   "path": "kousei/tohoku/jitai-touhoku-r0711.xlsx",
+   "bytes": 13222,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/jitai-touhoku-r0711.xlsx",
+   "heading": "令和7年11月処理分",
+   "text": "Excel［13KB］"
+  },
+  {
+   "path": "kousei/tohoku/shitei-touhoku-r0710.xlsx",
+   "bytes": 34607,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/shitei-touhoku-r0710.xlsx",
+   "heading": "令和7年10月処理分",
+   "text": "Excel［34KB］"
+  },
+  {
+   "path": "kousei/tohoku/haishi-touhoku-r0710.xlsx",
+   "bytes": 31244,
+   "url": "https://kouseikyoku.mhlw.go.jp/tohoku/haishi-touhoku-r0710.xlsx",
+   "heading": "令和7年10月処理分",
+   "text": "Excel［31KB］"
+  },
+  {
+   "path": "kousei/kantoshinetsu/shitei_ika_r0810-1.zip",
+   "bytes": 7624248,
+   "url": "https://kouseikyoku.mhlw.go.jp/kantoshinetsu/shitei_ika_r0810-1.zip",
+   "heading": "保険医療機関・保険薬局の指定一覧（コード内容別医療機関一覧表）",
+   "text": "医科（ZIP）"
+  },
+  {
+   "path": "kousei/kantoshinetsu/shitei_shikaheisetsu_r0810.zip",
+   "bytes": 282275,
+   "url": "https://kouseikyoku.mhlw.go.jp/kantoshinetsu/shitei_shikaheisetsu_r0810.zip",
+   "heading": "保険医療機関・保険薬局の指定一覧（コード内容別医療機関一覧表）",
+   "text": "医科（歯科併設）（ZIP）"
+  },
+  {
+   "path": "kousei/kantoshinetsu/shitei_ikaheisetsu_r0810.zip",
+   "bytes": 62978,
+   "url": "https://kouseikyoku.mhlw.go.jp/kantoshinetsu/shitei_ikaheisetsu_r0810.zip",
+   "heading": "保険医療機関・保険薬局の指定一覧（コード内容別医療機関一覧表）",
+   "text": "歯科（医科併設）（ZIP）"
+  },
+  {
+   "path": "kousei/tokaihokuriku/2610-01-01.zip",
+   "bytes": 2281496,
+   "url": "https://kouseikyoku.mhlw.go.jp/tokaihokuriku/2610-01-01.zip",
+   "heading": "",
+   "text": "コード内容別医療機関一覧表（医科）［ZIP形式：2,281KB］"
+  },
+  {
+   "path": "kousei/kinki/2026.10_kikanzentai_ika.zip",
+   "bytes": 4247348,
+   "url": "https://kouseikyoku.mhlw.go.jp/kinki/2026.10_kikanzentai_ika.zip",
+   "heading": "保険医療機関・保険薬局の指定一覧（全体） （コード内容別医療機関一覧表）",
+   "text": "（ZIP）"
+  },
+  {
+   "path": "kousei/kinki/2026.10_kikanzentai_sika.zip",
+   "bytes": 2392309,
+   "url": "https://kouseikyoku.mhlw.go.jp/kinki/2026.10_kikanzentai_sika.zip",
+   "heading": "保険医療機関・保険薬局の指定一覧（全体） （コード内容別医療機関一覧表）",
+   "text": "（ZIP）"
+  },
+  {
+   "path": "kousei/kinki/2026.10_kikanzentai_yakkyoku.zip",
+   "bytes": 2315657,
+   "url": "https://kouseikyoku.mhlw.go.jp/kinki/2026.10_kikanzentai_yakkyoku.zip",
+   "heading": "保険医療機関・保険薬局の指定一覧（全体） （コード内容別医療機関一覧表）",
+   "text": "（ZIP）"
+  },
+  {
+   "path": "kousei/chugokushikoku/000503425.zip",
+   "bytes": 1152704,
+   "url": "https://kouseikyoku.mhlw.go.jp/chugokushikoku/000503425.zip",
+   "heading": "保険医療機関・保険薬局のコード内容別医療機関一覧 （令和8年10月1日現在）",
+   "text": "医科［1MB］"
+  },
+  {
+   "path": "kousei/chugokushikoku/000503433.zip",
+   "bytes": 63799,
+   "url": "https://kouseikyoku.mhlw.go.jp/chugokushikoku/000503433.zip",
+   "heading": "診療科目変更一覧（前月処理分）",
+   "text": "R8年9月処理分 ［62KB］"
+  },
+  {
+   "path": "kousei/shikoku/000502918.zip",
+   "bytes": 636367,
+   "url": "https://kouseikyoku.mhlw.go.jp/shikoku/000502918.zip",
+   "heading": "1.保険医療機関・保険薬局の指定一覧（全体） 指定期間の確認方法について（PDF：75KB）",
+   "text": "（ZIP）"
+  },
+  {
+   "path": "kousei/shikoku/000502919.zip",
+   "bytes": 347184,
+   "url": "https://kouseikyoku.mhlw.go.jp/shikoku/000502919.zip",
+   "heading": "1.保険医療機関・保険薬局の指定一覧（全体） 指定期間の確認方法について（PDF：75KB）",
+   "text": "（ZIP）"
+  },
+  {
+   "path": "kousei/shikoku/000502920.zip",
+   "bytes": 411964,
+   "url": "https://kouseikyoku.mhlw.go.jp/shikoku/000502920.zip",
+   "heading": "1.保険医療機関・保険薬局の指定一覧（全体） 指定期間の確認方法について（PDF：75KB）",
+   "text": "（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504004.zip",
+   "bytes": 1836425,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504004.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504005.zip",
+   "bytes": 324596,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504005.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504006.zip",
+   "bytes": 484098,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504006.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504007.zip",
+   "bytes": 597964,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504007.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504008.zip",
+   "bytes": 398749,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504008.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504009.zip",
+   "bytes": 359078,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504009.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504010.zip",
+   "bytes": 534335,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504010.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "kousei/kyushu/000504011.zip",
+   "bytes": 442295,
+   "url": "https://kouseikyoku.mhlw.go.jp/kyushu/000504011.zip",
+   "heading": "コード内容別医療機関一覧表（指定一覧）",
+   "text": "エクセルデータ（ZIP）"
+  },
+  {
+   "path": "geo/A38-20_GML.zip",
+   "bytes": 1188443334,
+   "url": "https://nlftp.mlit.go.jp/ksj/gml/data/A38/A38-20/A38-20_GML.zip"
+  }
+ ],
+ "errors": []
+}
