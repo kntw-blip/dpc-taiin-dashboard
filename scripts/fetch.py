@@ -1,6 +1,6 @@
 """一次データの取得（GitHub Actions 上で実行）。
   1. 令和6年度 DPC導入の影響評価に係る調査「退院患者調査」の集計表（xlsx / pdf）
-     ※ 参考資料2 (7)(8)(9) の MDC別ファイル（MDC01〜18）は第2段階のため除外
+     ※ 参考資料2 (7) 疾患別手術別集計のMDC別ファイルは dpc_surg/ に保存。(8)(9) 処置のMDC別ファイルは対象外
   2. 医療情報ネット オープンデータ（病院 施設票・定義書）… 開設者情報の照合用
   3. 地方厚生局 コード内容別医療機関一覧表（医科 Excel）… 開設者（法人）の照合用
   4. 国土数値情報 医療圏データ（A38）… 市区町村→二次医療圏
@@ -45,15 +45,24 @@ def save(sub, name, url, meta):
     print("saved", p, len(c), flush=True)
 
 def fetch_dpc():
-    seen = set()
+    seen, sec = set(), ""
     for l in links(DPC_TOP):
-        href = l["href"]
+        href, txt = l["href"], l["text"]
         if not re.search(r"\.(xlsx?|pdf)$", href, re.I) or href in seen: continue
-        if re.search(r"MDC\s*\d{2}", l["text"]): continue  # 第2段階
+        # 直前の (n) 見出し付きリンクで、どの集計に属するMDC別ファイルかを判定
+        if "疾患別手術別集計" in txt: sec = "surg"
+        elif re.search(r"処置|レジメン|診断群分類毎", txt): sec = ""
+        m = re.search(r"MDC\s*(\d{2})", txt)
+        if m:
+            # 「(7) 疾患別手術別集計」のMDC別ファイルのみ取得（処置1・処置2のMDC別ファイルは対象外）
+            if sec == "surg" and "処置" not in txt:
+                seen.add(href)
+                save("dpc_surg", f"surg_MDC{m.group(1)}__{href.rsplit('/', 1)[-1]}", href, {"heading": l["heading"], "text": txt})
+            continue
         seen.add(href)
         fn = href.rsplit("/", 1)[-1]
-        name = f"{safe(l['heading'])[:20]}__{safe(l['text'])[:60]}__{fn}"
-        save("dpc", name, href, {"heading": l["heading"], "text": l["text"]})
+        name = f"{safe(l['heading'])[:20]}__{safe(txt)[:60]}__{fn}"
+        save("dpc", name, href, {"heading": l["heading"], "text": txt})
 
 def fetch_navii():
     L = links(NAVII_TOP)
