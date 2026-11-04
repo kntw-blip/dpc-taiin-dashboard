@@ -21,12 +21,21 @@ jobs:
       - run: pip install requests beautifulsoup4
       - name: Fetch
         run: python scripts/fetch.py raw 2>&1 | tee fetch_log.txt
+      - name: Slim down (GitHub 100MB/file limit)
+        run: |
+          mkdir -p raw/geo
+          if [ -f raw/geo/A38-20_GML.zip ]; then
+            (cd raw/geo && unzip -q -o -j A38-20_GML.zip "*_1.dbf" "*_1.shp.xml" "*.xml" 2>&1 | tail -3; rm -f A38-20_GML.zip)
+          fi
+          find raw -type f -size +95M -print -delete | sed 's/^/REMOVED_TOO_LARGE /' | tee -a fetch_log.txt
+          cp fetch_log.txt raw/
+          find raw -type f -printf "%s %p\n" | sort -k2 > raw/files.txt
+          echo "::notice title=files::$(du -sh raw | cut -f1) / $(wc -l < raw/files.txt) files%0A$(grep -E 'FAILED|REMOVED|errors' fetch_log.txt | tail -c 2500 | sed ':a;N;$!ba;s/\n/%0A/g')"
       - name: Push to raw branch
         run: |
-          cp fetch_log.txt raw/
           cd raw
           git init -q -b raw
           git config user.name "github-actions[bot]"
           git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
           git add -A && git commit -qm "raw data $(date -u +%FT%TZ)"
-          git -c http.postBuffer=524288000 push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" raw
+          git -c http.postBuffer=524288000 push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" raw 2> push_err.txt || { echo "::error title=push::$(tail -c 2000 push_err.txt | sed ':a;N;$!ba;s/\n/%0A/g')"; exit 1; }
