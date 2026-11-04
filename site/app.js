@@ -9,7 +9,7 @@ const css = (n) => getComputedStyle(vizRoot).getPropertyValue(n).trim();
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 const S = { H: [], byId: new Map(), byArea: new Map(), byCorp: new Map(), mdc: null, areas: {}, meta: {},
-            self: null, axis: "area", scope: "dpc", G: [], charts: {}, tables: {} };
+            self: null, axis: "area", scope: "dpc", region: "all", peerN: 30, G: [], charts: {}, tables: {} };
 
 /* ---------- 書式 ---------- */
 const F = {
@@ -95,17 +95,63 @@ function shortName(n) {
 
 /* ---------- 比較対象 ---------- */
 const inScope = (h) => S.scope === "all" || h.type === "DPC" || h.type === "準備";
+/* ---------- 類似病院（入院基本料の系統が同じ候補から、病床数・病床構成が近い順にN施設） ---------- */
+const REGIONS = { 北海道: ["北海道"], 東北: ["青森", "岩手", "宮城", "秋田", "山形", "福島"], 関東: ["茨城", "栃木", "群馬", "埼玉", "千葉", "東京", "神奈川"],
+  中部: ["新潟", "富山", "石川", "福井", "山梨", "長野", "岐阜", "静岡", "愛知"], 近畿: ["三重", "滋賀", "京都", "大阪", "兵庫", "奈良", "和歌山"],
+  中国: ["鳥取", "島根", "岡山", "広島", "山口"], 四国: ["徳島", "香川", "愛媛", "高知"], 九州・沖縄: ["福岡", "佐賀", "長崎", "熊本", "大分", "宮崎", "鹿児島", "沖縄"] };
+const regionOf = (p) => Object.keys(REGIONS).find((r) => REGIONS[r].some((x) => (p || "").startsWith(x))) || "";
+function kihonFam(k) {
+  if (!k) return "届出なし";
+  if (k.startsWith("特定機能")) return "特定機能病院";
+  if (k === "急性期一般1") return "急性期一般1";
+  if (k === "急性期一般2" || k === "急性期一般3") return "急性期一般2〜3";
+  if (k.startsWith("急性期一般")) return "急性期一般4〜6";
+  if (k.startsWith("地域一般")) return "地域一般";
+  return "専門病院";
+}
+function bedMix(h) {
+  const t = h.b_total; if (!t) return null;
+  return [(h.b_dpc || 0) / t, (h.b_kaifuku || 0) / t, ((h.b_chiiki || 0) + (h.b_chiikiiryo || 0)) / t, (h.b_ryoyo || 0) / t, (h.b_seishin || 0) / t];
+}
+function peerList(h) {
+  const m = bedMix(h); if (!m) return { list: [], cands: 0 };
+  const fam = kihonFam(h.kihon), reg = regionOf(h.pref);
+  const cands = S.H.filter((x) => x !== h && x.b_total && inScope(x) && kihonFam(x.kihon) === fam &&
+    (S.region === "all" || (S.region === "pref" ? x.pref === h.pref : regionOf(x.pref) === reg)));
+  cands.forEach((x) => { const mx = bedMix(x); x._dist = Math.abs(Math.log(x.b_total / h.b_total)) + sum(mx.map((v, i) => Math.abs(v - m[i]))); });
+  cands.sort((a, c) => a._dist - c._dist);
+  return { list: cands.slice(0, S.peerN), cands: cands.length, fam, reg };
+}
 function computeGroup() {
   const h = S.self;
   let list;
   if (S.axis === "area") list = S.byArea.get(h.area) || [h];
+  else if (S.axis === "peer") { const p = peerList(h); S.peer = p; list = [h].concat(p.list); }
   else list = h.corp_key ? S.byCorp.get(h.corp_key) || [h] : [h];
   S.G = list.filter((x) => x === h || inScope(x));
   S.others = S.G.filter((x) => x !== h);
 }
+function renderPeerBox() {
+  const box = $("#peer-box"), on = S.axis === "peer";
+  box.hidden = !on; $("#peer-region").hidden = !on; $("#peer-n").hidden = !on;
+  if (!on) return;
+  const h = S.self, m = bedMix(h) || [];
+  $("#peer-sum").textContent = `候補${S.peer.cands}施設から近い順に${S.peer.list.length}施設`;
+  const t = $("#peer-table"); t.textContent = "";
+  const head = ["順", "病院", "都道府県", "入院基本料", "総病床", "DPC算定", "回復期リハ", "地域包括", "療養", "精神", "距離"];
+  const thead = document.createElement("thead"), tr = document.createElement("tr");
+  head.forEach((x, i) => { const th = document.createElement("th"); th.textContent = x; if (i === 1 || i === 2 || i === 3) th.className = "t"; tr.appendChild(th); }); thead.appendChild(tr); t.appendChild(thead);
+  const body = document.createElement("tbody");
+  [h].concat(S.peer.list).forEach((x, k) => { const mx = bedMix(x) || [], r = document.createElement("tr"); if (x === h) r.className = "self";
+    [k === 0 ? "自院" : String(k), x.name, x.pref, x.kihon || "届出なし", F.int(x.b_total)].concat(mx.map(F.pct), [k === 0 ? "–" : x._dist.toFixed(3)])
+      .forEach((v, i) => { const td = document.createElement("td"); td.textContent = v; if (i === 1 || i === 2 || i === 3) td.className = "t"; r.appendChild(td); });
+    body.appendChild(r); });
+  t.appendChild(body);
+}
 const groupLabel = () => {
   const h = S.self;
   if (S.axis === "area") return `二次医療圏「${h.area.split("|")[1]}」（${h.pref}）`;
+  if (S.axis === "peer") return `類似病院（${{ all: "全国", reg: regionOf(h.pref) + "地方", pref: h.pref }[S.region]}・${kihonFam(h.kihon)}・近い順${S.peer.list.length}施設）`;
   return h.corp ? `法人「${h.corp}」` : "法人不明";
 };
 const mean = (list, f) => { const v = list.map(f).filter((x) => x != null); return v.length ? sum(v) / v.length : null; };
@@ -294,7 +340,7 @@ function stack100(id, cats, getVec, opt = {}) {
 const KPI = ["n6", "los6", "eff6", "cmi6", "ambm6", "emgm6", "ref6", "surgR", "gaN", "home6", "readmU", "gen6"];
 function renderSummary() {
   const self = S.self, box = $("#kpis"); box.textContent = "";
-  const axisWord = S.axis === "area" ? "医療圏内" : "法人内";
+  const axisWord = { area: "医療圏内", corp: "法人内", peer: "類似病院内" }[S.axis];
   for (const k of KPI) {
     const m = M[k], v = m.get(self), p = m.prev ? m.prev(self) : null, r = rankOf(m, self, S.G);
     const d = document.createElement("div"); d.className = "kpi";
@@ -1002,7 +1048,7 @@ function downloadCsv() {
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(",")));
   const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv" });
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-  a.download = `比較表_${S.self.short}_${S.axis === "area" ? "医療圏" : "法人"}.csv`; a.click(); URL.revokeObjectURL(a.href);
+  a.download = `比較表_${S.self.short}_${{ area: "医療圏", corp: "法人", peer: "類似病院" }[S.axis]}.csv`; a.click(); URL.revokeObjectURL(a.href);
 }
 
 /* ---------- 全体の描画 ---------- */
@@ -1020,12 +1066,15 @@ function renderAll() {
   if (S.axis === "corp" && !h.corp_key) { const w = document.createElement("div"); w.className = "warn"; w.textContent = "この病院は開設者を照合できなかったため、法人内の比較はできません。"; chip.appendChild(w); }
   else if (S.G.length === 1) { const w = document.createElement("div"); w.className = "warn"; w.textContent = "条件に合う比較対象の他院がありません。比較対象の範囲を広げると表示される場合があります。"; chip.appendChild(w); }
   if (S.axis === "corp") { const n = document.createElement("div"); n.className = "warn small"; n.textContent = "法人は令和8年10月時点の開設者です。"; chip.appendChild(n); }
+  if (S.axis === "peer" && S.peer.cands < S.peerN) { const w = document.createElement("div"); w.className = "warn"; w.textContent = `条件に合う候補が${S.peer.cands}施設のため、すべてを比較対象にしています。`; chip.appendChild(w); }
+  renderPeerBox();
   renderSummary(); renderScale(); renderMdc(); renderEff(); renderEmg(); renderLink(); renderAdv(); renderQual(); renderDrug(); renderTable();
   renderMdcDependent();
   if (S.surg) renderSurg();
   if (S.sev) renderSev();
   refreshOpenTables();
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);
+  if (S.axis === "peer") { u.searchParams.set("region", S.region); u.searchParams.set("n", S.peerN); } else { u.searchParams.delete("region"); u.searchParams.delete("n"); }
   history.replaceState(null, "", u);
 }
 function renderMdcDependent() { if (!S.self) return; renderMdcEff(); renderMdcEmg(); if (S.mdc) { renderAdm(); renderAmbM(); } refreshOpenTables(); }
@@ -1065,6 +1114,13 @@ function initControls() {
   document.querySelectorAll("[data-axis]").forEach((b) => b.addEventListener("click", () => { S.axis = b.dataset.axis; syncSeg(); renderAll(); }));
   document.querySelectorAll("[data-scope]").forEach((b) => b.addEventListener("click", () => { S.scope = b.dataset.scope; syncSeg(); renderAll(); }));
   $("#dl").addEventListener("click", downloadCsv);
+  document.querySelectorAll("[data-region]").forEach((b) => b.addEventListener("click", () => { S.region = b.dataset.region; syncSeg(); renderAll(); }));
+  const nr = $("#peer-n-range"), nn = $("#peer-n-num"); let tmr = null;
+  const setN = (v, now) => { v = Math.max(5, Math.min(500, Math.round(+v || 30))); S.peerN = v; nn.value = v; nr.value = Math.min(200, v);
+    clearTimeout(tmr); if (now) renderAll(); else tmr = setTimeout(renderAll, 250); };
+  nr.addEventListener("input", () => setN(nr.value, false));
+  nn.addEventListener("change", () => setN(nn.value, true));
+  nn.addEventListener("keydown", (e) => { if (e.key === "Enter") setN(nn.value, true); });
   const modes = ["auto", "light", "dark"], labels = { auto: "表示：自動", light: "表示：ライト", dark: "表示：ダーク" };
   let mode = "auto";
   try { mode = localStorage.getItem("theme") || "auto"; } catch (e) {}
@@ -1077,6 +1133,8 @@ function initControls() {
 function syncSeg() {
   document.querySelectorAll("[data-axis]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.axis === S.axis)));
   document.querySelectorAll("[data-scope]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.scope === S.scope)));
+  document.querySelectorAll("[data-region]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.region === S.region)));
+  $("#peer-n-num").value = S.peerN; $("#peer-n-range").value = Math.min(200, S.peerN);
 }
 
 (async function main() {
@@ -1084,7 +1142,9 @@ function syncSeg() {
   try { await load(); } catch (e) { $("#empty").textContent = "データの読み込みに失敗しました。ページを再読み込みしてください。"; throw e; }
   initSearch();
   const p = new URLSearchParams(location.search);
-  if (p.get("axis") === "corp") S.axis = "corp";
+  if (p.get("axis") === "corp" || p.get("axis") === "peer") S.axis = p.get("axis");
+  if (["all", "reg", "pref"].includes(p.get("region"))) S.region = p.get("region");
+  if (+p.get("n") >= 5) S.peerN = Math.min(500, Math.round(+p.get("n")));
   if (p.get("scope") === "all") S.scope = "all";
   syncSeg();
   if (p.get("h") && S.byId.get(p.get("h"))) { S.self = S.byId.get(p.get("h")); $("#q").value = S.self.name; renderAll(); }

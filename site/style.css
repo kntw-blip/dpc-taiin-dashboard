@@ -166,3 +166,11 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
 .method p { margin: 4px 0; }
 .pick-row { display: flex; flex-wrap: wrap; gap: 12px 20px; }
 .pick-row .sel { min-width: 280px; }
+
+.nbox { display: flex; align-items: center; gap: 8px; height: 34px; }
+.nbox input[type="range"] { width: 160px; accent-color: var(--self); }
+.nbox input[type="number"] { width: 72px; height: 34px; padding: 0 8px; font: inherit; color: var(--text-primary); background: var(--surface-1); border: 1px solid var(--axis); border-radius: 8px; }
+.nbox input:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.peerbox { margin: 8px 0 4px; }
+.peerbox summary { cursor: pointer; }
+.peerbox .tablewrap { max-height: 360px; margin-top: 8px; }

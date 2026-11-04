@@ -10,7 +10,7 @@
 <div class="viz-root">
 <header class="page-head">
   <h1>DPC退院患者調査ダッシュボード <span class="sub">令和6年度（令和6年6月〜令和7年5月退院）</span></h1>
-  <p class="lead">自院を選ぶと、同じ二次医療圏、または同じ法人の病院と比較できます。</p>
+  <p class="lead">自院を選ぶと、同じ二次医療圏の病院、同じ法人の病院、または病床数・病床機能が近い類似病院と比較できます。</p>
 </header>
 
 <section class="filters" aria-label="表示条件">
@@ -26,6 +26,23 @@
     <div class="seg" role="radiogroup" aria-labelledby="axis-label">
       <button type="button" role="radio" data-axis="area" aria-checked="true">二次医療圏</button>
       <button type="button" role="radio" data-axis="corp" aria-checked="false">法人</button>
+      <button type="button" role="radio" data-axis="peer" aria-checked="false">類似病院</button>
+    </div>
+  </div>
+  <div class="f-item" id="peer-region" hidden>
+    <span class="f-label" id="region-label">類似病院の地域</span>
+    <div class="seg" role="radiogroup" aria-labelledby="region-label">
+      <button type="button" role="radio" data-region="all" aria-checked="true">全国</button>
+      <button type="button" role="radio" data-region="reg" aria-checked="false">同じ地方</button>
+      <button type="button" role="radio" data-region="pref" aria-checked="false">同じ都道府県</button>
+    </div>
+  </div>
+  <div class="f-item" id="peer-n" hidden>
+    <label for="peer-n-num">類似病院の数</label>
+    <div class="nbox">
+      <input type="range" id="peer-n-range" min="5" max="200" step="1" value="30" aria-label="類似病院の数（スライダー）">
+      <input type="number" id="peer-n-num" min="5" max="500" step="1" value="30" inputmode="numeric">
+      <span class="muted small">施設</span>
     </div>
   </div>
   <div class="f-item">
@@ -53,6 +70,13 @@
     </div>
     <div class="group-chip" id="group-chip"></div>
   </section>
+
+  <details class="card peerbox" id="peer-box" hidden>
+    <summary><b>類似病院の選び方と一覧</b> <span class="muted small" id="peer-sum"></span></summary>
+    <p class="muted small">候補：自院と入院基本料の系統が同じ病院（特定機能病院／急性期一般1／急性期一般2〜3／急性期一般4〜6／地域一般／専門病院／届出なし）で、上の「比較対象」と「類似病院の地域」の条件に合うもの。<br>
+    近さ（距離）＝ |log(候補の総病床数 ÷ 自院の総病床数)| ＋ 病床構成5区分（DPC算定・回復期リハ・地域包括ケア／地域包括医療・療養・精神）の割合の差の絶対値の合計。距離が小さい順に指定した数を選んでいます。病床数は施設概要表の医療保険の病床数です。</p>
+    <div class="tablewrap"><table id="peer-table" class="cmp"></table></div>
+  </details>
 
   <nav class="toc" aria-label="セクション">
     <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
