@@ -155,3 +155,9 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
 .surg-pick .f-search { max-width: 720px; }
 .surg-info { margin: 10px 0 2px; font-size: 14px; }
 .surg-info b { font-weight: 650; }
+
+.subhead { font-size: 15px; margin: 18px 0 8px; }
+.fim-toggle { margin: 4px 0 12px; }
+.sel { height: 36px; min-width: 360px; max-width: 100%; padding: 0 10px; font: inherit; color: var(--text-primary); background: var(--surface-1); border: 1px solid var(--axis); border-radius: 8px; }
+.sel:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
+.fim-toggle .seg { align-self: flex-start; }

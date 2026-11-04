@@ -65,6 +65,7 @@ async function load() {
     for (const [id, arr] of Object.entries(d.h)) { const m = new Map(); arr.forEach(([ci, n, l]) => m.set(ci, [n, l])); byH.set(id, m); }
     S.surg = { cats: d.cats, byH }; initSurgSearch(); if (S.self) renderSurg();
   });
+  fetch("data/sev.json").then((r) => r.json()).then((d) => { S.sev = d; initSev(); if (S.self) renderSev(); });
   S.mdcPromise = fetch("data/mdc.json").then((r) => r.json()).then((d) => { S.mdc = d; if (S.self) renderMdcDependent(); });
 }
 function derive(h) {
@@ -188,8 +189,8 @@ function rankChart(id, mk, opt = {}) {
     ...b, grid: { left: 8, right: 70, top: 28, bottom: 28, containLabel: true },
     tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => {
       const h = S.byId.get(p.data.hid), r = list.indexOf(h) + 1;
-      return `<div style="margin-bottom:2px">${esc(h.name)}</div>` + tipRow(m.fmt(p.value) + (m.unit ? " " + m.unit : ""), `${r}位 / ${list.length}施設`); } },
-    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => (m.fmt === F.pct ? Math.round(v * 100) + "%" : v.toLocaleString("ja-JP")) } }),
+      return `<div style="margin-bottom:2px">${esc(h.name)}</div>` + tipRow(m.fmt(p.value) + (m.unit ? " " + m.unit : ""), `${r}位 / ${list.length}施設`) + (opt.extra ? opt.extra(h) : ""); } },
+    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: m.axisFmt || ((v) => (m.fmt === F.pct ? Math.round(v * 100) + "%" : v.toLocaleString("ja-JP"))) } }),
     yAxis: ax(b, { type: "category", inverse: true, data: show.map((h, i) => (h === self && pos >= top ? `${pos + 1}位 ` : `${list.indexOf(h) + 1}位 `) + h.short),
       axisLabel: { ...b.axisCommon.axisLabel, width: 190, overflow: "truncate",
         formatter: (v, i) => (show[i] === self ? `{s|${v}}` : v), rich: { s: { color: css("--text-primary"), fontWeight: 700, fontSize: 11 } } },
@@ -260,12 +261,14 @@ function scatter(id, xk, yk, opt = {}) {
 /* ---------- 100%積み上げ（自院・比較対象全体・他院） ---------- */
 function stack100(id, cats, getVec, opt = {}) {
   const b = base(), self = S.self, slots = ["--s1", "--s2", "--s3", "--s4", "--s5", "--s6"].map(css);
-  const others = S.others.filter((h) => getVec(h)).sort((a, c) => (c.n6 || 0) - (a.n6 || 0)).slice(0, opt.top || 10);
+  const W = opt.weight || ((h) => h.n6);
+  const others = S.others.filter((h) => getVec(h)).sort((a, c) => (W(c) || 0) - (W(a) || 0)).slice(0, opt.top || 10);
   // 比較対象全体（件数で重み付け）
-  const members = S.G.filter((h) => getVec(h) && h.n6);
-  const tot = cats.map((_, i) => wsum(members, (h) => (getVec(h)[i] || 0) * h.n6));
+  const members = S.G.filter((h) => getVec(h) && W(h));
+  const tot = cats.map((_, i) => wsum(members, (h) => (getVec(h)[i] || 0) * W(h)));
   const T = sum(tot);
   const rows = [{ name: "自院：" + self.short, v: getVec(self), self: true }, { name: "比較対象全体", v: T ? tot.map((x) => x / T) : null }]
+    .concat(opt.extraRows || [])
     .concat(others.map((h) => ({ name: h.short, v: getVec(h), full: h.name })));
   const valid = rows.filter((r) => r.v);
   const el = document.getElementById(id); el.style.height = Math.max(220, valid.length * 28 + 90) + "px";
@@ -666,6 +669,100 @@ function initSurgSearch() {
   q.addEventListener("blur", () => setTimeout(() => { close(); if (S.surgCat != null) q.value = catName(S.surgCat); }, 120));
 }
 
+/* ---------- 10 重症度・リハビリ ---------- */
+const approxN = (h, rate) => (rate != null && S.sev.den[h.id] ? S.sev.den[h.id] * rate : null);
+const fmtN = (v) => (v == null ? "–" : `約${Math.round(v).toLocaleString("ja-JP")}人`);
+const fimV = (h) => S.sev.fim.h[h.id] || null;
+const pt = (v) => (v == null ? "–" : `${v >= 0 ? "+" : ""}${(v * 100).toFixed(1)}ポイント`);
+S.fimKind = "motor";
+function initSev() {
+  const sel = $("#sev-sel"); sel.textContent = "";
+  const groups = [...new Set(S.sev.items.map((it) => it.group))];
+  groups.forEach((g) => { const og = document.createElement("optgroup"); og.label = g;
+    S.sev.items.forEach((it, i) => { if (it.group !== g) return; const o = document.createElement("option"); o.value = i; o.textContent = it.title + (it.quality ? "（入力精度）" : ""); og.appendChild(o); });
+    sel.appendChild(og); });
+  sel.addEventListener("change", () => { S.sevItem = +sel.value; S.sevUser = true; renderSevItem(); });
+  document.querySelectorAll("[data-fim]").forEach((b) => b.addEventListener("click", () => { S.fimKind = b.dataset.fim;
+    document.querySelectorAll("[data-fim]").forEach((x) => x.setAttribute("aria-checked", String(x.dataset.fim === S.fimKind))); renderFimStacks(); refreshOpenTables(); }));
+}
+function renderSev() { renderFim(); if (!S.sevUser || S.sevSelf !== S.self.id) { S.sevSelf = S.self.id;
+  const i = S.sev.items.findIndex((it) => it.h[S.self.id] && !it.quality); S.sevItem = i >= 0 ? i : 0; $("#sev-sel").value = S.sevItem; } renderSevItem(); }
+function renderFim() {
+  const self = S.self, v = fimV(self), box = $("#fim-info"); box.textContent = "";
+  const add = (t, bold) => { const e = document.createElement(bold ? "b" : "span"); e.textContent = t; box.appendChild(e); };
+  if (v) { add("自院 回復期リハ等の病床 "); add(`${F.int(v[0])}床`, true); add("・FIMの入力対象 "); add(fmtN(approxN(self, v[1])), true);
+    add(`（入院患者の${F.pct(v[1])}）・平均年齢 ${F.d1(v[2])}歳・手術ありの割合 ${F.pct(v[3])}`); }
+  else add("自院には、FIMの対象（回復期リハビリテーション病棟入院料等）のデータがありません。");
+  const G = S.G.filter(fimV);
+  $("#fim-scope-note").textContent = `比較対象のうちFIMのデータがある病院：${G.length}施設。` +
+    (S.scope === "dpc" ? "回復期リハビリテーション病棟は出来高算定病院に多いため、上の「比較対象」で「出来高算定病院も含む」を選ぶと比較できる病院が増えます。" : "");
+  const mx = { label: "入棟時 運動13〜26点（重度）の割合", unit: "", fmt: F.pct, get: (h) => (fimV(h) || [])[4] ?? null };
+  const my = { label: "退棟時 運動53〜91点の割合", unit: "", fmt: F.pct, get: (h) => (fimV(h) || [])[13] ?? null };
+  scatter("c-fim-sc", mx, my);
+  const mi = { label: "運動FIM 53点以上の割合の増加", unit: "", fmt: pt, axisFmt: (x) => `${Math.round(x * 100)}pt`,
+    get: (h) => { const f = fimV(h); return f && f[13] != null && f[6] != null ? f[13] - f[6] : null; } };
+  rankChart("c-fim-rank", mi, { extra: (h) => tipRow(fmtN(approxN(h, (fimV(h) || [])[1])), "FIMの入力対象") });
+  renderFimStacks();
+}
+function renderFimStacks() {
+  const motor = S.fimKind === "motor", W = (h) => approxN(h, (fimV(h) || [])[1]);
+  const bands = motor ? ["13〜26点（重度）", "27〜52点", "53〜91点"] : ["5〜10点（重度）", "11〜20点", "21〜35点"];
+  const off = motor ? 0 : 3;
+  stack100("c-fim-in", bands.concat(["不明"]), (h) => { const f = fimV(h); return f && f[4 + off] != null ? [f[4 + off], f[5 + off], f[6 + off], f[10] || 0] : null; }, { weight: W });
+  stack100("c-fim-out", bands.concat(["不明", "死亡"]), (h) => { const f = fimV(h); return f && f[11 + off] != null ? [f[11 + off], f[12 + off], f[13 + off], f[17] || 0, f[18] || 0] : null; }, { weight: W });
+}
+function renderSevItem() {
+  const it = S.sev.items[S.sevItem], self = S.self, V = (h) => it.h[h.id] || null;
+  const kpiOf = (h) => { const v = V(h); if (!v) return null; const xs = it.kpi.idx.map((i) => v[i]); return xs.some((x) => x == null) ? null : sum(xs); };
+  const G = S.G.filter(V);
+  // 列ごとの重み（直前の「入力対象割合」の列 × 分母）
+  const tgtOf = (ci) => Math.max(...it.targets.filter((t) => t <= ci));
+  const W = (h, ci) => approxN(h, (V(h) || [])[tgtOf(ci)]);
+  const groupVal = (ci) => { const ws = G.map((h) => [W(h, ci), V(h)[ci]]).filter(([w, x]) => w && x != null); const T = sum(ws.map((x) => x[0])); return T ? sum(ws.map(([w, x]) => w * x)) / T : null; };
+  const kpiGroup = (() => { const ws = G.map((h) => [W(h, it.kpi.idx[0]), kpiOf(h)]).filter(([w, x]) => w && x != null); const T = sum(ws.map((x) => x[0])); return T ? sum(ws.map(([w, x]) => w * x)) / T : null; })();
+  const box = $("#sev-info"); box.textContent = "";
+  const add = (t, bold) => { const e = document.createElement(bold ? "b" : "span"); e.textContent = t; box.appendChild(e); };
+  const v = V(self);
+  add("自院の入力対象 "); add(v ? fmtN(approxN(self, v[0])) : "–（データなし）", true);
+  if (v) add(`（入院患者の${F.pct(v[0])}）`);
+  add(`　${it.kpi.label}：自院 `); add(F.pct(kpiOf(self)), true); add(`／比較対象全体 ${F.pct(kpiGroup)}`);
+  add(`　比較対象の入力対象 ${fmtN(sum(G.map((h) => approxN(h, V(h)[0]) || 0)))}（${G.length}施設）`);
+  $("#sev-note").textContent = (it.quality ? "この項目は重症度の分布ではなく、データの入力精度（不明・分類不能の割合）を表します。" : "") + (it.note || "") +
+    (S.scope === "dpc" ? "" : "") ;
+  $("#sev-rank-title").textContent = it.kpi.label;
+  rankChart("c-sev-rank", { label: it.kpi.label, unit: "", fmt: F.pct, get: kpiOf }, { extra: (h) => tipRow(fmtN(approxN(h, (V(h) || [])[0])), "入力対象") });
+  const cols = it.cols.map((c, i) => [c, i]).filter(([, i]) => !it.targets.includes(i));
+  if (it.dist) {
+    $("#sev-comp-title").textContent = "分類ごとの割合";
+    const cats = cols.map(([c]) => c);
+    if (cats.length > 6) {  // 7分類以上は色の数を超えるため、表で全分類を示しつつグラフは横並びの棒にする
+      propBars(cols, V, groupVal, self);
+    } else stack100("c-sev-comp", cats, (h) => { const x = V(h); return x ? cols.map(([, i]) => x[i] ?? 0) : null; }, { weight: (h) => W(h, cols[0][1]) });
+  } else { $("#sev-comp-title").textContent = "項目ごとの割合：自院と比較対象全体"; propBars(cols, V, groupVal, self); }
+  refreshOpenTables();
+}
+function propBars(cols, V, groupVal, self) {
+  const b = base(), sv_ = cols.map(([, i]) => (V(self) || [])[i] ?? null), gv = cols.map(([, i]) => groupVal(i));
+  const short = (c) => { const t = c.replace(/^.*｜/, "").replace(/の割合$|割合$|に該当する者の割合$|に該当する割合$/, ""); return t.length > 26 ? t.slice(0, 25) + "…" : t; };
+  const el = document.getElementById("c-sev-comp"); el.style.height = Math.max(240, cols.length * 44 + 70) + "px";
+  const c = chart("c-sev-comp"); c.resize();
+  c.setOption({
+    ...b, grid: { left: 8, right: 60, top: 30, bottom: 24, containLabel: true },
+    legend: { top: 0, right: 0, textStyle: { color: css("--text-secondary"), fontSize: 11 }, data: ["自院", "比較対象全体"] },
+    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } },
+      formatter: (ps) => `<div style="margin-bottom:2px;max-width:420px;white-space:normal">${esc(cols[ps[0].dataIndex][0])}</div>` + ps.map((p) => tipRow(F.pct(p.seriesIndex === 0 ? sv_[p.dataIndex] : gv[p.dataIndex]), p.seriesName)).join("") },
+    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
+    yAxis: ax(b, { type: "category", inverse: true, data: cols.map(([c]) => short(c)), splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, width: 220, overflow: "truncate" } }),
+    series: [
+      { name: "自院", type: "bar", data: sv_.map((x) => x ?? 0), barMaxWidth: 10, barGap: "20%", itemStyle: { color: css("--self"), borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: "right", fontSize: 11, color: css("--text-primary"), formatter: (p) => F.pct(sv_[p.dataIndex]) } },
+      { name: "比較対象全体", type: "bar", data: gv, barMaxWidth: 10, itemStyle: { color: css("--other-strong"), borderRadius: [0, 4, 4, 0] } },
+    ],
+  }, true);
+  setNote("c-sev-comp", "");
+  setTable("c-sev-comp", ["分類・項目", "自院", "比較対象全体"], cols.map(([cn], k) => ({ cells: [cn, F.pct(sv_[k]), F.pct(gv[k])] })));
+}
+
 /* ---------- 比較表 ---------- */
 const TCOLS = [["病院", (h) => h.name, "t"], ["種別", (h) => h.type, "t"], ["法人", (h) => h.corp || "法人不明", "t"], ["病床", (h) => h.b_total, F.int],
   ["退院患者数", M.n6.get, F.int], ["前年度", M.n6.prev, F.int], ["平均在院日数", M.los6.get, F.d1], ["在院日数の指標", M.eff6.get, F.d2], ["患者構成の指標", M.cmi6.get, F.d2],
@@ -716,6 +813,7 @@ function renderAll() {
   renderSummary(); renderScale(); renderMdc(); renderEff(); renderEmg(); renderLink(); renderAdv(); renderQual(); renderDrug(); renderTable();
   renderMdcDependent();
   if (S.surg) renderSurg();
+  if (S.sev) renderSev();
   refreshOpenTables();
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);
   history.replaceState(null, "", u);

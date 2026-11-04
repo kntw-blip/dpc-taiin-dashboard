@@ -57,7 +57,7 @@
   <nav class="toc" aria-label="セクション">
     <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
     <a href="#s-emg">4 救急</a><a href="#s-link">5 地域連携</a><a href="#s-adv">6 手術・高度医療</a><a href="#s-qual">7 医療の質</a>
-    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-table">比較表</a>
+    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-sev">10 重症度・リハビリ</a><a href="#s-table">比較表</a>
   </nav>
 
   <section id="s-summary" class="sec">
@@ -164,6 +164,42 @@
       <div class="card" data-chart="surg-sc"><h3>件数と平均在院日数</h3><div class="chart tall" id="c-surg-sc"></div></div>
     </div>
     <div class="card" data-chart="surg-heat"><h3>手術シェアのヒートマップ <span class="note">列＝自院の主要な手術、色＝比較対象内のシェア</span></h3><div class="chart xtall" id="c-surg-heat"></div></div>
+  </section>
+
+  <section id="s-sev" class="sec">
+    <h2>10 重症度・リハビリ</h2>
+    <p class="muted small">公表されているのは「入力状況」の集計で、対象患者の点数帯・分類ごとの割合です（平均点や改善度そのものは公表されていません）。「約○人」は、入力対象の割合 × 一般病棟に入院があった患者数で推計したおおよその人数です。10件未満は秘匿されています。患者構成の調整はしていません。</p>
+    <h3 class="subhead">回復期リハビリテーション（FIM）</h3>
+    <p id="fim-info" class="surg-info"></p>
+    <p class="muted small" id="fim-scope-note"></p>
+    <div class="grid2">
+      <div class="card" data-chart="fim-sc"><h3>入棟時の重度患者の割合と退棟時の高得点帯の割合 <span class="note">運動項目</span></h3><div class="chart tall" id="c-fim-sc"></div></div>
+      <div class="card" data-chart="fim-rank"><h3>運動FIM 53点以上の割合の増加 <span class="note">退棟時 − 入棟時（改善の目安）</span></h3><div class="chart tall" id="c-fim-rank"></div></div>
+    </div>
+    <div class="f-item fim-toggle">
+      <span class="f-label" id="fim-kind-label">FIMの項目</span>
+      <div class="seg" role="radiogroup" aria-labelledby="fim-kind-label">
+        <button type="button" role="radio" data-fim="motor" aria-checked="true">運動項目</button>
+        <button type="button" role="radio" data-fim="cog" aria-checked="false">認知項目</button>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="fim-in"><h3>入棟時の点数帯</h3><div class="chart" id="c-fim-in"></div></div>
+      <div class="card" data-chart="fim-out"><h3>退棟時の点数帯</h3><div class="chart" id="c-fim-out"></div></div>
+    </div>
+    <h3 class="subhead">疾患別の重症度</h3>
+    <div class="card surg-pick">
+      <div class="f-item">
+        <label for="sev-sel">項目</label>
+        <select id="sev-sel" class="sel"></select>
+      </div>
+      <p id="sev-info" class="surg-info"></p>
+      <p id="sev-note" class="muted small"></p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="sev-rank"><h3 id="sev-rank-title">代表指標の比較</h3><div class="chart tall" id="c-sev-rank"></div></div>
+      <div class="card" data-chart="sev-comp"><h3 id="sev-comp-title">分類ごとの割合</h3><div class="chart tall" id="c-sev-comp"></div></div>
+    </div>
   </section>
 
   <section id="s-table" class="sec">
