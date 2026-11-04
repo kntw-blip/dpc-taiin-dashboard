@@ -2,7 +2,8 @@
   1. 令和6年度 DPC導入の影響評価に係る調査「退院患者調査」の集計表（xlsx / pdf）
      ※ 参考資料2 (7)(8)(9) の MDC別ファイル（MDC01〜18）は第2段階のため除外
   2. 医療情報ネット オープンデータ（病院 施設票・定義書）… 開設者情報の照合用
-  3. 国土数値情報 医療圏データ（A38）… 市区町村→二次医療圏
+  3. 地方厚生局 コード内容別医療機関一覧表（医科 Excel）… 開設者（法人）の照合用
+  4. 国土数値情報 医療圏データ（A38）… 市区町村→二次医療圏
 出力: RAW_DIR 以下（manifest.json にファイル一覧）
 """
 import json, re, sys, time, pathlib, urllib.parse
@@ -64,12 +65,43 @@ def fetch_navii():
         if "定義書" in l["text"] and re.search(r"\.xlsx?$", l["href"]):
             save("navii", "definition__" + l["href"].rsplit("/", 1)[-1], l["href"], {"text": l["text"]})
 
+KOUSEI = {  # 地方厚生局「コード内容別医療機関一覧表」（開設者氏名を含む）
+    "hokkaido": "https://kouseikyoku.mhlw.go.jp/hokkaido/gyomu/gyomu/hoken_kikan/code_ichiran.html",
+    "tohoku": "https://kouseikyoku.mhlw.go.jp/tohoku/gyomu/gyomu/hoken_kikan/itiran.html",
+    "kantoshinetsu": "https://kouseikyoku.mhlw.go.jp/kantoshinetsu/chousa/shitei.html",
+    "tokaihokuriku": "https://kouseikyoku.mhlw.go.jp/tokaihokuriku/newpage_00287.html",
+    "kinki": "https://kouseikyoku.mhlw.go.jp/kinki/tyousa/shinkishitei.html",
+    "chugokushikoku": "https://kouseikyoku.mhlw.go.jp/chugokushikoku/chousaka/iryoukikanshitei.html",
+    "shikoku": "https://kouseikyoku.mhlw.go.jp/shikoku/gyomu/gyomu/hoken_kikan/shitei/index.html",
+    "kyushu": "https://kouseikyoku.mhlw.go.jp/kyushu/gyomu/gyomu/hoken_kikan/index_00006.html",
+}
+
+def fetch_kouseikyoku():
+    for k, url in KOUSEI.items():
+        try:
+            L = links(url)
+        except Exception as e:
+            print("FAILED page", k, e, flush=True); continue
+        got = 0
+        for l in L:
+            href, txt, h = l["href"], l["text"], l["heading"]
+            if not re.search(r"\.(zip|xlsx?)$", href, re.I): continue
+            if re.search(r"新規|廃止|辞退|取消|訪問看護|施術所|届出受理", h + txt): continue
+            if re.search(r"歯科|薬局", txt) and "医科" not in txt: continue
+            if k == "kyushu" and got >= 8: break  # 最新月のみ（8事務所）
+            fn = href.rsplit("/", 1)[-1]
+            try:
+                save(f"kousei/{k}", fn, href, {"heading": h, "text": txt}); got += 1
+            except Exception as e:
+                print("FAILED file", k, href, e, flush=True)
+        print("kousei", k, got, flush=True)
+
 def fetch_geo():
     save("geo", "A38-20_GML.zip", "https://nlftp.mlit.go.jp/ksj/gml/data/A38/A38-20/A38-20_GML.zip", {})
 
 if __name__ == "__main__":
     errs = []
-    for f in (fetch_dpc, fetch_navii, fetch_geo):
+    for f in (fetch_dpc, fetch_navii, fetch_kouseikyoku, fetch_geo):
         try: f()
         except Exception as e:
             print("FAILED", f.__name__, e, flush=True); errs.append(f"{f.__name__}: {e}")
