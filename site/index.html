@@ -109,6 +109,30 @@
       <div class="card" data-chart="rank-emg"><h3>救急医療入院の件数（1か月あたり）</h3><div class="chart tall" id="c-rank-emg"></div></div>
       <div class="card" data-chart="mdc-emg"><h3>自院のMDC別 救急医療入院 <span class="note">年間件数</span></h3><div class="chart tall" id="c-mdc-emg"></div></div>
     </div>
+    <h3 class="subhead" id="s-adm">入院区分（予定・救急）のMDC別分析</h3>
+    <div class="method">
+      <p><b>区分</b>：様式1の「予定・救急医療入院」による4区分（予定入院／化学療法実施の再入院／予定外入院／救急医療入院）。入院経路が家庭・他院・介護施設等からの患者が対象で、4区分は重なりません。</p>
+      <p><b>推計の方法</b>：公表データでは10件未満が秘匿（–）されています。MDCごとに4区分のうち1区分だけが秘匿されている場合は、「推計値 ＝ 同じMDCの患者数の合計 −（公表されている3区分の合計）」で求め、<b>推計</b>と表示しています。合計には、同じ対象で集計された参考資料2(4)「入院から24時間以内の死亡」のMDC別「合計」を使っています（4区分がすべて公表されているMDCでは、96%で差が2件以内）。推計値が0〜9件の範囲に収まらない場合と、2区分以上が秘匿されている場合は推計せず、「秘匿（内訳不明）」として扱います。合計そのものが秘匿されているMDCは集計に含みません。</p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="adm-self"><h3>自院のMDC別 入院区分の構成</h3><div class="chart tall" id="c-adm-self"></div></div>
+      <div class="card" data-chart="adm-group"><h3>比較対象全体のMDC別 入院区分の構成</h3><div class="chart tall" id="c-adm-group"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="adm-sc"><h3>予定入院シェアと救急医療入院シェア（MDC別） <span class="note">比較対象内のシェア</span></h3><div class="chart tall" id="c-adm-sc"></div></div>
+      <div class="card" data-chart="adm-rate"><h3>救急医療入院の割合（MDC別）：自院と比較対象全体</h3><div class="chart tall" id="c-adm-rate"></div></div>
+    </div>
+    <div class="card surg-pick">
+      <h3>MDCと区分を選んで比較</h3>
+      <div class="pick-row">
+        <div class="f-item"><label for="adm-mdc">MDC</label><select id="adm-mdc" class="sel"></select></div>
+        <div class="f-item"><label for="adm-kind">区分</label><select id="adm-kind" class="sel"></select></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="adm-rank"><h3 id="adm-rank-title">件数の比較</h3><div class="chart tall" id="c-adm-rank"></div></div>
+      <div class="card" data-chart="adm-comp"><h3 id="adm-comp-title">入院区分の構成</h3><div class="chart tall" id="c-adm-comp"></div></div>
+    </div>
   </section>
 
   <section id="s-link" class="sec">

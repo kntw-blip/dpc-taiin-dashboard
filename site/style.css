@@ -161,3 +161,8 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
 .sel { height: 36px; min-width: 360px; max-width: 100%; padding: 0 10px; font: inherit; color: var(--text-primary); background: var(--surface-1); border: 1px solid var(--axis); border-radius: 8px; }
 .sel:focus { outline: 2px solid var(--focus); outline-offset: 1px; }
 .fim-toggle .seg { align-self: flex-start; }
+
+.method { font-size: 12px; color: var(--text-secondary); background: var(--surface-2); border-radius: 10px; padding: 10px 14px; margin: 0 0 16px; }
+.method p { margin: 4px 0; }
+.pick-row { display: flex; flex-wrap: wrap; gap: 12px 20px; }
+.pick-row .sel { min-width: 280px; }

@@ -508,6 +508,124 @@ function renderMdcEmg() {
   setTable("c-mdc-emg", ["MDC", "自院の救急医療入院", "比較対象の合計", "シェア"], MDCS.map((m, i) => ({ cells: [m, F.int(mine[i]), F.int(tot[i]), mine[i] != null && tot[i] ? F.pct(mine[i] / tot[i]) : "–"] })));
 }
 
+/* ---------- 4' 入院区分（予定・救急）のMDC別分析 ---------- */
+const ADM = ["予定入院", "化学療法実施の再入院", "予定外入院", "救急医療入院"];
+const ADM_KIND = ADM.concat(["予定外入院＋救急医療入院"]);
+/* 病院×MDC の4区分。1区分だけ秘匿なら「合計 − 公表3区分」で推計（0〜9件のときのみ） */
+function admCell(h, i) {
+  const d = S.mdc && S.mdc[h.id]; if (!d || !d.adm || !d.adm[i]) return null;
+  const a = d.adm[i], tot = d.d24 && d.d24[i] ? d.d24[i][1] : null;
+  if (tot == null) return null;  // 合計が秘匿（10件未満）または実績なし
+  const v = a.slice(), est = [false, false, false, false];
+  const miss = v.map((x, k) => (x == null ? k : -1)).filter((k) => k >= 0);
+  if (miss.length === 1) { const e = tot - sum(v.filter((x) => x != null)); if (e >= 0 && e <= 9) { v[miss[0]] = e; est[miss[0]] = true; } }
+  const known = sum(v.filter((x) => x != null));
+  return { v: v.map((x) => x ?? 0), est, hidden: v.map((x) => x == null), unk: Math.max(0, tot - known), tot };
+}
+function admSum(h, mi) {  // mi = MDC番号（0〜17）、"all" は全MDC合計
+  const idx = mi === "all" ? MDCS.map((_, i) => i) : [mi];
+  const out = { v: [0, 0, 0, 0], est: [false, false, false, false], unk: 0, tot: 0, any: false };
+  idx.forEach((i) => { const c = admCell(h, i); if (!c) return; out.any = true; c.v.forEach((x, k) => (out.v[k] += x)); c.est.forEach((e, k) => (out.est[k] = out.est[k] || e)); out.unk += c.unk; out.tot += c.tot; });
+  return out.any ? out : null;
+}
+const admKindVal = (c, k) => (k === 4 ? c.v[2] + c.v[3] : c.v[k]);
+const admEstFlag = (c, k) => (k === 4 ? c.est[2] || c.est[3] : c.est[k]);
+function admStack(id, rows, title) {  // rows: [{name, c(admSum結果), bold}]
+  const b = base(), slots = ["--s1", "--s2", "--s3", "--s4"].map(css), cats = ADM.concat(["秘匿（内訳不明）"]);
+  const valid = rows.filter((r) => r.c && r.c.tot);
+  const share = (r, k) => (k < 4 ? r.c.v[k] : r.c.unk) / r.c.tot;
+  const el = document.getElementById(id); el.style.height = Math.max(220, valid.length * 24 + 90) + "px";
+  const c = chart(id); c.resize();
+  c.setOption({
+    ...b, grid: { left: 8, right: 16, top: 40, bottom: 24, containLabel: true },
+    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 10, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
+    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } },
+      formatter: (ps) => { const r = valid[ps[0].dataIndex];
+        return `<div style="margin-bottom:2px">${esc(r.full || r.name)}</div>` + cats.map((cn, k) => { const n = k < 4 ? r.c.v[k] : r.c.unk;
+          return tipRow(`${F.pct(share(r, k))}（${F.int(n)}件${k < 4 && r.c.est[k] ? "・推計" : ""}）`, cn); }).join("") + tipRow(F.int(r.c.tot) + "件", "合計"); } },
+    xAxis: ax(b, { type: "value", max: 1, axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
+    yAxis: ax(b, { type: "category", inverse: true, data: valid.map((r) => r.name + (r.c.est.some(Boolean) ? "＊" : "")), splitLine: { show: false },
+      axisLabel: { ...b.axisCommon.axisLabel, width: 210, overflow: "truncate", formatter: (v, i) => (valid[i].bold ? `{s|${v}}` : v), rich: { s: { color: css("--text-primary"), fontWeight: 700, fontSize: 11 } } } }),
+    series: cats.map((cn, k) => ({ name: cn, type: "bar", stack: "s", barMaxWidth: 16, data: valid.map((r) => share(r, k)),
+      itemStyle: { color: k < 4 ? slots[k] : css("--other"), borderColor: css("--surface-1"), borderWidth: 1 } })),
+  }, true);
+  setNote(id, valid.some((r) => r.c.est.some(Boolean)) ? "＊は推計値を含む行（推計の方法は上の説明を参照）。灰色は秘匿で内訳が分からない件数。" : "灰色は秘匿で内訳が分からない件数。");
+  setTable(id, ["対象"].concat(cats.map((x) => x + "（件）"), ["合計（件）"]),
+    valid.map((r) => ({ self: !!r.bold, cells: [r.full || r.name].concat(r.c.v.map((x, k) => F.int(x) + (r.c.est[k] ? "（推計）" : "")), [F.int(r.c.unk), F.int(r.c.tot)]) })));
+}
+function groupAdm(mi, list) {
+  const out = { v: [0, 0, 0, 0], est: [false, false, false, false], unk: 0, tot: 0, any: false };
+  list.forEach((h) => { const c = admSum(h, mi); if (!c) return; out.any = true; c.v.forEach((x, k) => (out.v[k] += x)); c.est.forEach((e, k) => (out.est[k] = out.est[k] || e)); out.unk += c.unk; out.tot += c.tot; });
+  return out.any ? out : null;
+}
+function renderAdm() {
+  const self = S.self, b = base();
+  // A 構成（自院・比較対象全体）
+  admStack("c-adm-self", [{ name: "全MDC", c: admSum(self, "all"), bold: true }].concat(MDCS.map((m, i) => ({ name: m, c: admSum(self, i) }))));
+  admStack("c-adm-group", [{ name: "全MDC", c: groupAdm("all", S.G), bold: true }].concat(MDCS.map((m, i) => ({ name: m, c: groupAdm(i, S.G) }))));
+  if (!admSum(self, "all")) setNote("c-adm-self", "自院の入院区分のデータがありません（10件未満の秘匿を含む）。");
+  // B 予定入院シェア × 救急医療入院シェア
+  const pts = MDCS.map((m, i) => { const c = admSum(self, i), g = groupAdm(i, S.G); if (!c || !g) return null;
+    const xs = g.v[0] ? c.v[0] / g.v[0] : null, ys = g.v[3] ? c.v[3] / g.v[3] : null; if (xs == null || ys == null) return null;
+    return { i, value: [xs, ys], n: c.tot, est: c.est[0] || c.est[3], me: c, g }; }).filter(Boolean);
+  const mx = Math.min(1, Math.max(0.1, ...pts.map((p) => Math.max(p.value[0], p.value[1]))) * 1.1);
+  const ring = css("--surface-1");
+  chart("c-adm-sc").setOption({
+    ...b, grid: { left: 12, right: 30, top: 30, bottom: 40, containLabel: true },
+    tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => { const d = pts[p.dataIndex];
+      return `<div style="margin-bottom:2px">${esc(MDCS[d.i])}</div>` + tipRow(F.pct(d.value[0]) + `（${F.int(d.me.v[0])}件${d.me.est[0] ? "・推計" : ""}）`, "予定入院のシェア") +
+        tipRow(F.pct(d.value[1]) + `（${F.int(d.me.v[3])}件${d.me.est[3] ? "・推計" : ""}）`, "救急医療入院のシェア") + tipRow(F.int(d.n) + "件", "自院の合計"); } },
+    xAxis: ax(b, { type: "value", min: 0, max: mx, name: "予定入院のシェア", nameLocation: "middle", nameGap: 26, axisLabel: { ...b.axisCommon.axisLabel, showMaxLabel: false, formatter: (v) => Math.round(v * 100) + "%" } }),
+    yAxis: ax(b, { type: "value", min: 0, max: mx, name: "救急医療入院のシェア", nameLocation: "end", nameTextStyle: { ...b.axisCommon.nameTextStyle, align: "left" },
+      axisLabel: { ...b.axisCommon.axisLabel, showMaxLabel: false, formatter: (v) => Math.round(v * 100) + "%" } }),
+    series: [{ type: "scatter", data: pts.map((p) => ({ value: p.value })), symbolSize: 12, itemStyle: { color: css("--self"), borderColor: ring, borderWidth: 2 },
+      label: { show: true, position: "right", fontSize: 11, color: css("--text-secondary"), formatter: (p) => MDCS[pts[p.dataIndex].i].slice(3) },
+      labelLayout: { hideOverlap: true },
+      markLine: { silent: true, symbol: "none", lineStyle: { color: css("--axis"), type: "solid", width: 1 }, label: { show: true, formatter: "シェアが等しい線", color: css("--text-muted"), fontSize: 11, position: "insideEndTop" },
+        data: [[{ coord: [0, 0] }, { coord: [mx, mx] }]] } }],
+  }, true);
+  setNote("c-adm-sc", pts.length ? "線より上：救急医療入院で比較対象内のシェアが高いMDC。線より下：予定入院でシェアが高いMDC。重なった名前は非表示（表で確認できます）。" : "表示できるMDCがありません。");
+  setTable("c-adm-sc", ["MDC", "予定入院（件）", "予定入院のシェア", "救急医療入院（件）", "救急医療入院のシェア"],
+    pts.map((p) => ({ cells: [MDCS[p.i], F.int(p.me.v[0]) + (p.me.est[0] ? "（推計）" : ""), F.pct(p.value[0]), F.int(p.me.v[3]) + (p.me.est[3] ? "（推計）" : ""), F.pct(p.value[1])] })));
+  // D 救急医療入院の割合（MDC別）
+  const rs = MDCS.map((_, i) => { const c = admSum(self, i); return c && c.tot ? c.v[3] / c.tot : null; });
+  const rg = MDCS.map((_, i) => { const c = groupAdm(i, S.G); return c && c.tot ? c.v[3] / c.tot : null; });
+  chart("c-adm-rate").setOption({
+    ...b, grid: { left: 8, right: 50, top: 30, bottom: 24, containLabel: true },
+    legend: { top: 0, right: 0, textStyle: { color: css("--text-secondary"), fontSize: 11 }, data: ["自院", "比較対象全体"] },
+    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } },
+      formatter: (ps) => `<div style="margin-bottom:2px">${esc(MDCS[ps[0].dataIndex])}</div>` + tipRow(F.pct(rs[ps[0].dataIndex]), "自院") + tipRow(F.pct(rg[ps[0].dataIndex]), "比較対象全体") },
+    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
+    yAxis: ax(b, { type: "category", inverse: true, data: MDCS, splitLine: { show: false } }),
+    series: [
+      { name: "自院", type: "bar", data: rs.map((x) => x ?? 0), barMaxWidth: 8, barGap: "20%", itemStyle: { color: css("--self"), borderRadius: [0, 4, 4, 0] },
+        label: { show: true, position: "right", fontSize: 11, color: css("--text-primary"), formatter: (p) => (rs[p.dataIndex] == null ? "–" : F.pct(rs[p.dataIndex])) } },
+      { name: "比較対象全体", type: "bar", data: rg.map((x) => x ?? 0), barMaxWidth: 8, itemStyle: { color: css("--other-strong"), borderRadius: [0, 4, 4, 0] } },
+    ],
+  }, true);
+  setNote("c-adm-rate", "割合 ＝ 救急医療入院 ÷ MDCの合計（推計値を含む）。");
+  setTable("c-adm-rate", ["MDC", "自院", "比較対象全体"], MDCS.map((m, i) => ({ cells: [m, F.pct(rs[i]), F.pct(rg[i])] })));
+  renderAdmPick();
+}
+function initAdmPick() {
+  const sm = $("#adm-mdc"), sk = $("#adm-kind");
+  [["all", "全MDC"]].concat(MDCS.map((m, i) => [i, m])).forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sm.appendChild(o); });
+  ADM_KIND.forEach((t, k) => { const o = document.createElement("option"); o.value = k; o.textContent = t; sk.appendChild(o); });
+  sk.value = 3;
+  [sm, sk].forEach((e) => e.addEventListener("change", () => { renderAdmPick(); refreshOpenTables(); }));
+}
+function renderAdmPick() {
+  const mv = $("#adm-mdc").value, mi = mv === "all" ? "all" : +mv, k = +$("#adm-kind").value;
+  const label = `${ADM_KIND[k]}の件数（${mi === "all" ? "全MDC" : MDCS[mi]}）`;
+  $("#adm-rank-title").textContent = label;
+  $("#adm-comp-title").textContent = `入院区分の構成（${mi === "all" ? "全MDC" : MDCS[mi]}）`;
+  const m = { label: ADM_KIND[k] + "の件数", unit: "件", fmt: F.int, get: (h) => { const c = admSum(h, mi); return c ? admKindVal(c, k) : null; } };
+  rankChart("c-adm-rank", m, { extra: (h) => { const c = admSum(h, mi); return c && admEstFlag(c, k) ? tipRow("推計を含む", "") : ""; } });
+  const others = S.others.map((h) => [h, admSum(h, mi)]).filter(([, c]) => c && c.tot).sort((a, c) => c[1].tot - a[1].tot).slice(0, 10);
+  admStack("c-adm-comp", [{ name: "自院：" + S.self.short, c: admSum(S.self, mi), bold: true }, { name: "比較対象全体", c: groupAdm(mi, S.G), bold: true }]
+    .concat(others.map(([h, c]) => ({ name: h.short, full: h.name, c }))));
+}
+
 /* ---------- 5 地域連携 ---------- */
 function renderLink() {
   rankChart("c-rank-ref", "ref6");
@@ -818,7 +936,7 @@ function renderAll() {
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);
   history.replaceState(null, "", u);
 }
-function renderMdcDependent() { if (!S.self) return; renderMdcEff(); renderMdcEmg(); refreshOpenTables(); }
+function renderMdcDependent() { if (!S.self) return; renderMdcEff(); renderMdcEmg(); if (S.mdc) renderAdm(); refreshOpenTables(); }
 
 /* ---------- 病院検索 ---------- */
 function initSearch() {
@@ -870,7 +988,7 @@ function syncSeg() {
 }
 
 (async function main() {
-  initControls(); initTableButtons();
+  initControls(); initTableButtons(); initAdmPick();
   try { await load(); } catch (e) { $("#empty").textContent = "データの読み込みに失敗しました。ページを再読み込みしてください。"; throw e; }
   initSearch();
   const p = new URLSearchParams(location.search);
