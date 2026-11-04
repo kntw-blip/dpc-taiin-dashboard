@@ -31,6 +31,7 @@ jobs:
           python scripts/kousei_parse.py raw/kousei work/kousei_hosp.csv 2>&1 | tee build_log.txt
           python scripts/match_owner.py "$(ls raw/dpc/*施設概要表*)" work/kousei_hosp.csv raw/geo/A38-20_1.dbf work/match.csv 2>&1 | tee -a build_log.txt
           python scripts/build_data.py raw work/match.csv data/owner_override.csv site/data 2>&1 | tee -a build_log.txt
+          python scripts/build_surg.py raw site/data 2>&1 | tee -a build_log.txt
           echo "::notice title=build::$(tail -c 2500 build_log.txt | sed ':a;N;$!ba;s/\n/%0A/g')"
       - name: Publish to gh-pages
         run: |

@@ -60,6 +60,11 @@ async function load() {
     if (h.corp_key) (S.byCorp.get(h.corp_key) || S.byCorp.set(h.corp_key, []).get(h.corp_key)).push(h);
   }
   $("#built").textContent = `データ作成：${S.meta.built_at}（UTC）`;
+  fetch("data/surg.json").then((r) => r.json()).then((d) => {
+    const byH = new Map();
+    for (const [id, arr] of Object.entries(d.h)) { const m = new Map(); arr.forEach(([ci, n, l]) => m.set(ci, [n, l])); byH.set(id, m); }
+    S.surg = { cats: d.cats, byH }; initSurgSearch(); if (S.self) renderSurg();
+  });
   S.mdcPromise = fetch("data/mdc.json").then((r) => r.json()).then((d) => { S.mdc = d; if (S.self) renderMdcDependent(); });
 }
 function derive(h) {
@@ -169,7 +174,7 @@ function refreshOpenTables() {
 
 /* ---------- ランキング（自院を強調、他院はグレー、他院平均を縦線） ---------- */
 function rankChart(id, mk, opt = {}) {
-  const m = M[mk], b = base(), self = S.self, top = opt.top || 25;
+  const m = typeof mk === "string" ? M[mk] : mk, b = base(), self = S.self, top = opt.top || 25;
   const list = S.G.filter((h) => m.get(h) != null).sort((a, c) => (m.low ? m.get(a) - m.get(c) : m.get(c) - m.get(a)));
   const pos = list.indexOf(self);
   let show = list.slice(0, top);
@@ -211,7 +216,7 @@ function setNote(id, txt) {
 
 /* ---------- 散布図（他院はグレーの点、自院は青で名前つき） ---------- */
 function scatter(id, xk, yk, opt = {}) {
-  const mx = M[xk], my = M[yk], b = base(), self = S.self;
+  const mx = typeof xk === "string" ? M[xk] : xk, my = typeof yk === "string" ? M[yk] : yk, b = base(), self = S.self;
   const pts = S.G.filter((h) => mx.get(h) != null && my.get(h) != null);
   const ring = css("--surface-1");
   // 外れ値で軸が潰れないよう、2〜98パーセンタイルの範囲に収め、範囲外の点は端に三角で表示
@@ -227,7 +232,7 @@ function scatter(id, xk, yk, opt = {}) {
   const me = pts.includes(self) ? [pt(self)] : [];
   const ref = [];
   if (opt.refX != null) ref.push({ xAxis: opt.refX });
-  if (opt.refY != null) ref.push({ yAxis: opt.refY });
+  if (opt.refY != null) ref.push({ yAxis: opt.refY, label: opt.refYLabel ? { show: true, formatter: opt.refYLabel, color: css("--text-secondary"), fontSize: 11, position: "insideEndTop" } : { show: false } });
   const fmtAx = (m) => (v) => (m.fmt === F.pct ? Math.round(v * 100) + "%" : v.toLocaleString("ja-JP"));
   chart(id).setOption({
     ...b, grid: { left: 12, right: 24, top: 30, bottom: 40, containLabel: true },
@@ -540,6 +545,127 @@ function renderAdv() {
 function renderQual() { rankChart("c-rank-death", "death6"); rankChart("c-rank-readm", "readmU"); }
 function renderDrug() { rankChart("c-rank-gen", "gen6"); }
 
+/* ---------- 9 手術別の実績 ---------- */
+const sv = (h, ci) => (S.surg && S.surg.byH.get(h.id) ? S.surg.byH.get(h.id).get(ci) || null : null);
+const catName = (ci) => { const c = S.surg.cats[ci]; return `${c[2]}｜${c[4]}`; };
+const catShort = (ci, n = 34) => { const c = S.surg.cats[ci]; const d = c[2].split(/[、(（]/)[0]; const t = `${d}｜${c[4]}`; return t.length > n ? t.slice(0, n - 1) + "…" : t; };
+function surgGroupStats(ci, list) {
+  const rows = list.map((h) => [h, sv(h, ci)]).filter(([, v]) => v);
+  const T = sum(rows.map(([, v]) => v[0]));
+  const losW = sum(rows.filter(([, v]) => v[1] != null).map(([, v]) => v[0] * v[1])), losN = sum(rows.filter(([, v]) => v[1] != null).map(([, v]) => v[0]));
+  return { rows, T, los: losN ? losW / losN : null };
+}
+function surgRankOf(ci, h, list) {
+  const v = sv(h, ci); if (!v) return null;
+  const vals = list.map((x) => sv(x, ci)).filter(Boolean).map((x) => x[0]);
+  return { r: vals.filter((x) => x > v[0]).length + 1, n: vals.length };
+}
+function renderSurg() {
+  const self = S.self, b = base(), mine = S.surg.byH.get(self.id);
+  // A 自院の主要な手術
+  const top = mine ? [...mine.entries()].sort((a, c) => c[1][0] - a[1][0]).slice(0, 20).map(([ci]) => ci) : [];
+  const info = top.map((ci) => { const g = surgGroupStats(ci, S.G), r = surgRankOf(ci, self, S.G); return { ci, n: sv(self, ci)[0], los: sv(self, ci)[1], T: g.T, r }; });
+  const elA = document.getElementById("c-surg-top"); elA.style.height = Math.max(200, info.length * 26 + 60) + "px";
+  const cA = chart("c-surg-top"); cA.resize();
+  cA.setOption({
+    ...b, grid: { left: 8, right: 170, top: 10, bottom: 24, containLabel: true },
+    tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => { const x = info[p.dataIndex];
+      return `<div style="margin-bottom:2px;max-width:420px;white-space:normal">${esc(catName(x.ci))}</div>` + tipRow(F.int(x.n) + "件", "自院の件数") +
+        tipRow(F.d1(x.los) + "日", "自院の平均在院日数") + tipRow(`${x.r.r}位 / ${x.r.n}`, "比較対象内の順位") + tipRow(F.pct(x.n / x.T), "比較対象内のシェア") + `<div style="color:${css("--text-muted")};margin-top:4px">クリックで下の比較に表示</div>`; } },
+    xAxis: ax(b, { type: "value" }),
+    yAxis: ax(b, { type: "category", inverse: true, data: info.map((x) => catShort(x.ci)), splitLine: { show: false },
+      axisLabel: { ...b.axisCommon.axisLabel, width: 300, overflow: "truncate" } }),
+    series: [{ type: "bar", data: info.map((x) => x.n), barMaxWidth: 14, cursor: "pointer", itemStyle: { color: css("--self"), borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: "right", color: css("--text-secondary"), fontSize: 11,
+        formatter: (p) => { const x = info[p.dataIndex]; return `${F.int(x.n)}件（${x.r.r}位/${x.r.n}・${F.pct(x.n / x.T)}）`; } } }],
+  }, true);
+  cA.off("click"); cA.on("click", (p) => { S.surgCat = info[p.dataIndex].ci; renderSurgPick(); document.querySelector(".surg-pick").scrollIntoView({ behavior: "smooth", block: "start" }); });
+  setNote("c-surg-top", info.length ? "括弧内は比較対象内の順位とシェア。" : "自院で件数が公表されている手術区分（10件以上）はありません。");
+  setTable("c-surg-top", ["疾患｜手術区分", "件数", "平均在院日数", "比較対象内の順位", "シェア"],
+    info.map((x) => ({ cells: [catName(x.ci), F.int(x.n), F.d1(x.los), `${x.r.r} / ${x.r.n}`, F.pct(x.n / x.T)] })));
+  // B 選択中の手術（自院の最多区分、なければ比較対象で最多の区分）
+  if (S.surgCat == null || S.surgSelf !== self.id) {
+    S.surgSelf = self.id;
+    if (top.length) S.surgCat = top[0];
+    else { const tot = new Map(); S.G.forEach((h) => { const m = S.surg.byH.get(h.id); if (m) m.forEach((v, ci) => tot.set(ci, (tot.get(ci) || 0) + v[0])); });
+      S.surgCat = [...tot.entries()].sort((a, c) => c[1] - a[1])[0]?.[0] ?? 0; }
+  }
+  renderSurgPick();
+  // C ヒートマップ
+  const cols = top.slice(0, 12);
+  const colT = cols.map((ci) => surgGroupStats(ci, S.G).T);
+  const others = S.others.map((h) => [h, sum(cols.map((ci) => (sv(h, ci) || [0])[0]))]).filter(([, t]) => t > 0).sort((a, c) => c[1] - a[1]).slice(0, 14).map(([h]) => h);
+  const rows = [self].concat(others);
+  const data = [];
+  rows.forEach((h, y) => cols.forEach((ci, x) => { const v = sv(h, ci); data.push([x, y, v && colT[x] ? v[0] / colT[x] : null, v ? v[0] : null]); }));
+  const seq = ["--seq-1", "--seq-2", "--seq-3", "--seq-4", "--seq-5", "--seq-6", "--seq-7"].map(css);
+  const elC = document.getElementById("c-surg-heat"); elC.style.height = Math.max(240, rows.length * 28 + 260) + "px";
+  const cC = chart("c-surg-heat"); cC.resize();
+  cC.setOption({
+    ...b, grid: { left: 8, right: 20, top: 10, bottom: 50, containLabel: true },
+    tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => `<div style="margin-bottom:2px">${esc(rows[p.data[1]].name)}</div>` +
+      `<div style="color:${css("--text-secondary")};max-width:420px;white-space:normal">${esc(catName(cols[p.data[0]]))}</div>` +
+      tipRow(p.data[3] == null ? "–（10件未満または実績なし）" : F.int(p.data[3]) + "件", "件数") + tipRow(F.pct(p.data[2]), "比較対象内のシェア") },
+    xAxis: ax(b, { type: "category", data: cols.map((ci) => catShort(ci, 18)), splitLine: { show: false }, axisLine: { show: false },
+      axisLabel: { ...b.axisCommon.axisLabel, rotate: 50, interval: 0 } }),
+    yAxis: ax(b, { type: "category", inverse: true, data: rows.map((h) => (h === self ? "自院：" : "") + h.short), splitLine: { show: false }, axisLine: { show: false },
+      axisLabel: { ...b.axisCommon.axisLabel, interval: 0, width: 180, overflow: "truncate", formatter: (v, i) => (i === 0 ? `{s|${v}}` : v), rich: { s: { color: css("--text-primary"), fontWeight: 700, fontSize: 11 } } } }),
+    visualMap: { type: "continuous", dimension: 2, min: 0, max: heatMax(data), orient: "horizontal", left: "center", bottom: 4, inRange: { color: seq },
+      text: ["シェア高", "低"], textStyle: { color: css("--text-secondary"), fontSize: 11 }, itemHeight: 160, itemWidth: 10, formatter: (v) => F.pct(v) },
+    series: [{ type: "heatmap", data, itemStyle: { borderColor: css("--surface-1"), borderWidth: 2, borderRadius: 3 } }],
+  }, true);
+  setNote("c-surg-heat", cols.length ? "空白は10件未満（秘匿）または実績なし。" : "自院の主要な手術がないため表示できません。");
+  setTable("c-surg-heat", ["病院"].concat(cols.map(catName)), rows.map((h) => ({ self: h === self, cells: [h.name].concat(cols.map((ci) => F.int((sv(h, ci) || [null])[0]))) })));
+}
+function renderSurgPick() {
+  const ci = S.surgCat, self = S.self, c = S.surg.cats[ci];
+  $("#sq").value = catName(ci);
+  const g = surgGroupStats(ci, S.G), nat = surgGroupStats(ci, S.H), me = sv(self, ci), r = surgRankOf(ci, self, S.G);
+  const box = $("#surg-info"); box.textContent = "";
+  const add = (t, bold) => { const e = document.createElement(bold ? "b" : "span"); e.textContent = t; box.appendChild(e); };
+  add("自院 "); add(me ? `${F.int(me[0])}件` : "–（10件未満または実績なし）", true);
+  if (me) { add(`・平均在院日数 `); add(`${F.d1(me[1])}日`, true); add(`（${r.r}位 / ${r.n}施設、シェア${F.pct(me[0] / g.T)}）`); }
+  add(`　比較対象全体 ${F.int(g.T)}件・平均在院日数 ${F.d1(g.los)}日　全国 ${F.int(nat.T)}件・${F.d1(nat.los)}日`);
+  $("#surg-k").textContent = `${c[0]}　手技：${c[6] || "–"}　Kコード：${c[5] || "–"}`;
+  const mN = { label: "件数", unit: "件", fmt: F.int, get: (h) => (sv(h, ci) || [null])[0] };
+  const mL = { label: "平均在院日数", unit: "日", fmt: F.d1, get: (h) => (sv(h, ci) || [null, null])[1], low: true };
+  rankChart("c-surg-rank", mN);
+  scatter("c-surg-sc", mN, mL, { refY: g.los, refYLabel: `比較対象全体 ${F.d1(g.los)}日` });
+  const n = document.getElementById("c-surg-sc").parentElement.querySelector(".cnote");
+  if (n && !n.textContent) { n.textContent = "横線は比較対象全体の平均在院日数（件数で重み付け）。"; n.hidden = false; }
+  refreshOpenTables();
+}
+function initSurgSearch() {
+  const q = $("#sq"), list = $("#sq-list"); let hits = [], act = -1;
+  const norm = (s) => s.normalize("NFKC").replace(/[\s　・、]/g, "").toLowerCase();
+  const idx = S.surg.cats.map((c) => norm(c.join(" ")));
+  const close = () => { list.hidden = true; q.setAttribute("aria-expanded", "false"); };
+  const draw = () => { list.textContent = "";
+    hits.forEach((ci, i) => { const li = document.createElement("li"); li.setAttribute("role", "option"); li.setAttribute("aria-selected", String(i === act));
+      const a = document.createElement("span"); a.textContent = catName(ci); const m = document.createElement("span"); m.className = "m";
+      const me = S.self ? sv(S.self, ci) : null; m.textContent = me ? `自院${F.int(me[0])}件` : ""; li.append(a, m);
+      li.addEventListener("mousedown", (e) => { e.preventDefault(); pick(ci); }); list.appendChild(li); });
+    list.hidden = !hits.length; q.setAttribute("aria-expanded", String(!!hits.length)); };
+  const pick = (ci) => { S.surgCat = ci; close(); q.blur(); renderSurgPick(); };
+  q.addEventListener("focus", () => q.select());
+  q.addEventListener("input", () => {
+    const terms = q.value.split(/[\s　]+/).map(norm).filter(Boolean);
+    if (!terms.length) { hits = []; close(); return; }
+    const selfMap = S.self ? S.surg.byH.get(S.self.id) : null;
+    hits = idx.map((t, ci) => [ci, t]).filter(([, t]) => terms.every((w) => t.includes(w))).map(([ci]) => ci)
+      .sort((a, c) => ((selfMap?.get(c) || [0])[0] - (selfMap?.get(a) || [0])[0])).slice(0, 40);
+    act = hits.length ? 0 : -1; draw();
+  });
+  q.addEventListener("keydown", (e) => {
+    if (list.hidden) return;
+    if (e.key === "ArrowDown") { act = Math.min(hits.length - 1, act + 1); draw(); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { act = Math.max(0, act - 1); draw(); e.preventDefault(); }
+    else if (e.key === "Enter" && act >= 0) { pick(hits[act]); e.preventDefault(); }
+    else if (e.key === "Escape") close();
+  });
+  q.addEventListener("blur", () => setTimeout(() => { close(); if (S.surgCat != null) q.value = catName(S.surgCat); }, 120));
+}
+
 /* ---------- 比較表 ---------- */
 const TCOLS = [["病院", (h) => h.name, "t"], ["種別", (h) => h.type, "t"], ["法人", (h) => h.corp || "法人不明", "t"], ["病床", (h) => h.b_total, F.int],
   ["退院患者数", M.n6.get, F.int], ["前年度", M.n6.prev, F.int], ["平均在院日数", M.los6.get, F.d1], ["在院日数の指標", M.eff6.get, F.d2], ["患者構成の指標", M.cmi6.get, F.d2],
@@ -589,6 +715,7 @@ function renderAll() {
   if (S.axis === "corp") { const n = document.createElement("div"); n.className = "warn small"; n.textContent = "法人は令和8年10月時点の開設者です。"; chip.appendChild(n); }
   renderSummary(); renderScale(); renderMdc(); renderEff(); renderEmg(); renderLink(); renderAdv(); renderQual(); renderDrug(); renderTable();
   renderMdcDependent();
+  if (S.surg) renderSurg();
   refreshOpenTables();
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);
   history.replaceState(null, "", u);

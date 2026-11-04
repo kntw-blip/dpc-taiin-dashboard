@@ -151,3 +151,7 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
   .chart.tall { height: 420px; }
   .f-theme { margin-left: 0; }
 }
+
+.surg-pick .f-search { max-width: 720px; }
+.surg-info { margin: 10px 0 2px; font-size: 14px; }
+.surg-info b { font-weight: 650; }

@@ -57,7 +57,7 @@
   <nav class="toc" aria-label="セクション">
     <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
     <a href="#s-emg">4 救急</a><a href="#s-link">5 地域連携</a><a href="#s-adv">6 手術・高度医療</a><a href="#s-qual">7 医療の質</a>
-    <a href="#s-drug">8 薬剤</a><a href="#s-table">比較表</a>
+    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-table">比較表</a>
   </nav>
 
   <section id="s-summary" class="sec">
@@ -143,6 +143,29 @@
     <div class="card" data-chart="rank-gen"><h3>後発医薬品の使用割合（一般病棟）</h3><div class="chart tall" id="c-rank-gen"></div></div>
   </section>
 
+  <section id="s-surg" class="sec">
+    <h2>9 手術別の実績 <span class="note">DPC6桁の疾患 × 手術区分（診断群分類の9〜10桁目）ごとの件数・平均在院日数</span></h2>
+    <p class="muted small">10件未満は秘匿されているため、病院ごとの件数が表示されない区分があります。比較対象の合計・シェアは公表されている件数だけで計算しています。手術名は診断群分類（DPC）電子点数表（令和6年度）の定義によります。</p>
+    <div class="card" data-chart="surg-top"><h3>自院の主要な手術（件数の多い順）</h3><div class="chart tall" id="c-surg-top"></div></div>
+    <div class="card surg-pick">
+      <h3>手術を選んで比較</h3>
+      <div class="f-item f-search">
+        <label for="sq">手術区分（疾患名・手術名・Kコードで検索）</label>
+        <div class="combo">
+          <input id="sq" type="search" autocomplete="off" placeholder="例：ステント、K5493、人工関節、白内障" role="combobox" aria-expanded="false" aria-controls="sq-list">
+          <ul id="sq-list" class="combo-list" role="listbox" hidden></ul>
+        </div>
+      </div>
+      <p id="surg-info" class="surg-info"></p>
+      <p id="surg-k" class="muted small"></p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="surg-rank"><h3>件数の比較</h3><div class="chart tall" id="c-surg-rank"></div></div>
+      <div class="card" data-chart="surg-sc"><h3>件数と平均在院日数</h3><div class="chart tall" id="c-surg-sc"></div></div>
+    </div>
+    <div class="card" data-chart="surg-heat"><h3>手術シェアのヒートマップ <span class="note">列＝自院の主要な手術、色＝比較対象内のシェア</span></h3><div class="chart xtall" id="c-surg-heat"></div></div>
+  </section>
+
   <section id="s-table" class="sec">
     <h2>比較表 <button type="button" id="dl" class="ghost small">CSVダウンロード</button></h2>
     <div class="tablewrap"><table id="cmp" class="cmp"></table></div>
@@ -152,7 +175,7 @@
 <footer class="foot">
   <h2>データと注意事項</h2>
   <ul>
-    <li>出典：厚生労働省「令和6年度DPC導入の影響評価に係る調査『退院患者調査』の結果報告」、地方厚生局「コード内容別医療機関一覧表」（令和8年10月1日時点）、国土交通省「国土数値情報（医療圏データ）」。これらを加工して作成しています。</li>
+    <li>出典：厚生労働省「令和6年度DPC導入の影響評価に係る調査『退院患者調査』の結果報告」、厚生労働省「診断群分類（DPC）電子点数表」（令和6年度）、地方厚生局「コード内容別医療機関一覧表」（令和8年10月1日時点）、国土交通省「国土数値情報（医療圏データ）」。これらを加工して作成しています。</li>
     <li>集計対象は令和6年6月〜令和7年5月に退院（転棟）した患者です。在院日数1日以下、24時間以内の死亡などは分析対象外です。</li>
     <li>10件未満の値は公表データで秘匿されているため、空欄（–）で表示しています。</li>
     <li>二次医療圏は第8次医療計画の330圏です。病院は所在地の市区町村で割り当てています。</li>
