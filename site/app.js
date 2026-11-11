@@ -1148,4 +1148,10 @@ function syncSeg() {
   if (p.get("scope") === "all") S.scope = "all";
   syncSeg();
   if (p.get("h") && S.byId.get(p.get("h"))) { S.self = S.byId.get(p.get("h")); $("#q").value = S.self.name; renderAll(); }
+  window.dispatchEvent(new CustomEvent("dpc:loaded"));
 })();
+/* 使い方（help.js）から使う窓口 */
+window.DPCApp = {
+  S,
+  select(id) { const h = S.byId.get(id); if (!h) return false; S.self = h; $("#q").value = h.name; renderAll(); return true; },
+};

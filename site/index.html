@@ -23,7 +23,7 @@
   </div>
   <div class="f-item">
     <span class="f-label" id="axis-label">比較軸</span>
-    <div class="seg" role="radiogroup" aria-labelledby="axis-label">
+    <div class="seg" id="axis-seg" role="radiogroup" aria-labelledby="axis-label">
       <button type="button" role="radio" data-axis="area" aria-checked="true">二次医療圏</button>
       <button type="button" role="radio" data-axis="corp" aria-checked="false">法人</button>
       <button type="button" role="radio" data-axis="peer" aria-checked="false">類似病院</button>
@@ -47,19 +47,33 @@
   </div>
   <div class="f-item">
     <span class="f-label" id="scope-label">比較対象</span>
-    <div class="seg" role="radiogroup" aria-labelledby="scope-label">
+    <div class="seg" id="scope-seg" role="radiogroup" aria-labelledby="scope-label">
       <button type="button" role="radio" data-scope="dpc" aria-checked="true">DPC参加・準備病院</button>
       <button type="button" role="radio" data-scope="all" aria-checked="false">出来高算定病院も含む</button>
     </div>
   </div>
   <div class="f-item f-theme">
-    <button type="button" id="theme" class="ghost" aria-label="表示テーマの切り替え">表示：自動</button>
+    <div class="head-btns">
+      <button type="button" id="help-open" class="primary-ghost" aria-haspopup="dialog" aria-controls="help">使い方</button>
+      <button type="button" id="theme" class="ghost" aria-label="表示テーマの切り替え">表示：自動</button>
+    </div>
   </div>
 </section>
 
 <div id="empty" class="empty">
-  <p>上の検索欄から自院を選んでください。</p>
-  <p class="muted">全国6,370施設（DPC参加1,765・準備228・出来高算定4,377）を収録しています。</p>
+  <h2 class="qs-title">はじめての方へ：3ステップで使えます</h2>
+  <ol class="qs">
+    <li><span class="qs-n">1</span><div><b>自院を選ぶ</b><br><span class="muted">上の検索欄に病院名の一部（例：「日赤」「市民病院」）を入れ、候補から選びます。</span></div></li>
+    <li><span class="qs-n">2</span><div><b>比較軸を選ぶ</b><br><span class="muted">「二次医療圏」は地域の競合、「法人」は同じ法人の病院、「類似病院」は規模・機能が近い全国の病院と比べます。</span></div></li>
+    <li><span class="qs-n">3</span><div><b>比較対象の範囲を選ぶ</b><br><span class="muted">初めは「DPC参加・準備病院」。中小病院や回復期の病院も含めたいときは「出来高算定病院も含む」にします。</span></div></li>
+  </ol>
+  <p class="qs-ex">試しに見る：
+    <a href="?h=10001&axis=area&scope=dpc">札幌医科大学附属病院（大学病院）</a>
+    <a href="?h=20173&axis=area&scope=dpc">済生会熊本病院（大規模の急性期病院）</a>
+    <a href="?h=31083&axis=peer&scope=dpc">地域医療機能推進機構 大和郡山病院（中規模・地域包括ケア病棟あり）</a>
+  </p>
+  <p><button type="button" class="ghost" id="tour-start-empty">画面の使い方をガイドで見る</button></p>
+  <p class="muted small">全国6,370施設（DPC参加1,765・準備228・出来高算定4,377）を収録しています。</p>
 </div>
 
 <main id="main" hidden>
@@ -290,5 +304,6 @@
 </div>
 <script src="vendor/echarts.min.js"></script>
 <script src="app.js"></script>
+<script src="help.js"></script>
 </body>
 </html>

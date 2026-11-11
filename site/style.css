@@ -174,3 +174,48 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
 .peerbox { margin: 8px 0 4px; }
 .peerbox summary { cursor: pointer; }
 .peerbox .tablewrap { max-height: 360px; margin-top: 8px; }
+
+/* ---------- 使い方 ---------- */
+.head-btns { display: flex; gap: 8px; }
+.primary-ghost { font: inherit; height: 34px; padding: 0 14px; border: 1px solid var(--self); border-radius: 8px; background: transparent; color: var(--self); font-weight: 600; cursor: pointer; }
+.primary-ghost:focus-visible, .help-btn:focus-visible, .tb-next:focus-visible, .hp-close:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+.help-btn { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; margin-left: 6px; vertical-align: 1px;
+  border-radius: 50%; border: 1px solid var(--axis); background: var(--surface-1); color: var(--text-secondary); font: 600 12px/1 system-ui, sans-serif; cursor: pointer; padding: 0; }
+.help-btn:hover { border-color: var(--self); color: var(--self); }
+.help-pop { position: fixed; z-index: 60; background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border); border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 12px 14px; font-size: 13px; max-height: 70vh; overflow: auto; }
+.hpop-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.hpop-row { margin-top: 6px; }
+.hpop-row p { margin: 2px 0 0; }
+.hpop-k { font-size: 11px; font-weight: 600; color: var(--text-secondary); }
+.hp-close { border: 0; background: transparent; color: var(--text-secondary); font-size: 20px; line-height: 1; cursor: pointer; padding: 0 4px; }
+.help-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(480px, 100vw); z-index: 55; background: var(--surface-1); color: var(--text-primary);
+  border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,.14); display: flex; flex-direction: column; }
+.hp-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px 6px; }
+.hp-head h2 { margin: 0; }
+.hp-nav { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0 18px 10px; border-bottom: 1px solid var(--grid); font-size: 13px; }
+.hp-nav a { color: var(--self); text-decoration: none; }
+.hp-body { overflow: auto; padding: 8px 18px 30px; font-size: 13px; }
+.hp-sec { padding-top: 10px; scroll-margin-top: 8px; }
+.hp-sec h3 { font-size: 15px; margin: 6px 0; }
+.hp-steps { padding-left: 20px; margin: 0; } .hp-steps li { margin: 6px 0; }
+.hp-list { padding-left: 18px; margin: 0; } .hp-list li { margin: 4px 0; }
+.hp-dl dt { font-weight: 600; margin-top: 8px; } .hp-dl dd { margin: 2px 0 0; color: var(--text-secondary); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: 0; }
+.sw-self { background: var(--self); } .sw-other { background: var(--other-strong); margin-left: 6px; }
+.tour-hole { position: fixed; z-index: 70; border-radius: 10px; pointer-events: none; box-shadow: 0 0 0 9999px rgba(0,0,0,.55); transition: all .2s ease; outline: 2px solid #fff; }
+.tour-box { position: fixed; z-index: 71; width: min(380px, calc(100vw - 24px)); background: var(--surface-1); color: var(--text-primary); border-radius: 12px; padding: 14px 16px; box-shadow: 0 12px 34px rgba(0,0,0,.3); font-size: 13px; }
+.tour-box h3 { margin: 2px 0 6px; font-size: 15px; }
+.tour-box p { margin: 4px 0; }
+.tb-step { font-size: 11px; color: var(--text-muted); }
+.tb-btns { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+.tb-sp { flex: 1; }
+.tb-next { font: inherit; height: 34px; padding: 0 16px; border: 0; border-radius: 8px; background: var(--self); color: #fff; font-weight: 600; cursor: pointer; }
+.empty { text-align: left; max-width: 760px; margin: 0 auto; font-size: 14px; }
+.qs-title { font-size: 18px; margin: 10px 0 14px; }
+.qs { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 12px; }
+.qs li { display: flex; gap: 12px; align-items: flex-start; background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.qs-n { flex: none; width: 26px; height: 26px; border-radius: 50%; background: var(--self); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+.qs-ex { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+
+[hidden] { display: none !important; }
