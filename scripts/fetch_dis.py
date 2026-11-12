@@ -19,6 +19,8 @@ PAGES = {
     "R2": "https://www.mhlw.go.jp/stf/shingi2/0000196043_00005.html",
     "R1": "https://www.mhlw.go.jp/stf/shingi2/0000196043_00004.html",
 }
+TYPES = {"type_surg": r"疾患別手術別集計_?施設類型別", "type_op1": r"疾患別手術有無別処置1有無別集計_?施設類型別",
+         "type_op2": r"疾患別手術有無別処置2有無別集計_?施設類型別"}   # 全国の施設類型別の合計（秘匿セルの推計に使う。小さいのでExcelのまま保存）
 TABLES = {"surg": r"疾患別手術別集計_?MDC\s*(\d{2})", "op1": r"疾患別手術有無別処置1有無別集計_?MDC\s*(\d{2})"}
 S = requests.Session(); S.headers["User-Agent"] = "Mozilla/5.0 (dpc-taiin-dashboard data pipeline)"
 nk = lambda s: unicodedata.normalize("NFKC", str(s if s is not None else "")).strip()
@@ -64,6 +66,11 @@ for y, url in PAGES.items():
         soup = BeautifulSoup(r.text, "html.parser")
         links = [(nk(a.get_text(" ", strip=True)), urllib.parse.urljoin(url, a["href"])) for a in soup.find_all("a", href=True)]
         (OUT / y).mkdir(parents=True, exist_ok=True)
+        for tname, pat in TYPES.items():
+            hits = [h for t, h in links if re.search(pat, t) and re.search(r"\.xlsx?$", h, re.I)]
+            for h in hits[:1]:
+                c = get(h).content; (OUT / y / f"{tname}.xlsx").write_bytes(c)
+                manifest.append({"year": y, "table": tname, "url": h, "xlsx_bytes": len(c)}); print("saved", y, tname, len(c), flush=True)
         for tname, pat in TABLES.items():
             hits = [(re.search(pat, t).group(1), h) for t, h in links if re.search(pat, t) and re.search(r"\.xlsx?$", h, re.I)]
             print(y, tname, len(hits), "files", flush=True)
