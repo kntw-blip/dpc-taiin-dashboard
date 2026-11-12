@@ -60,7 +60,7 @@ function changeFmt(m) {
 }
 /* 年度の横軸：区切り線を年度の間（4.5）に引けるよう数値軸にする */
 const xYears = (b, extra = {}, short = false) => ax(b, Object.assign({ type: "value", min: 0, max: 5, interval: 1, splitLine: { show: false },
-  axisLabel: { ...b.axisCommon.axisLabel, fontSize: short ? 10 : 11, formatter: (v) => (short ? TY[v].replace("令和", "R") : TYL[v]) },
+  axisLabel: { ...b.axisCommon.axisLabel, fontSize: short ? 10 : 11, formatter: (v) => (short || window.innerWidth < 560 ? TY[v].replace("令和", "R") + (short ? "" : "年度") : TYL[v]) },
   axisPointer: { snap: true } }, extra));
 const xy = (arr) => arr.map((v, i) => [i, v]);
 const R6LAB = ["令和元年度", "令和2年度", "令和3年度", "令和4年度", "令和5年度", "令和6年度\n（6月〜翌5月）"];
@@ -100,7 +100,7 @@ function multiPanels(id, keys, opt) {
       if (band) {  // 中央50%の範囲（25〜75パーセンタイル）を多角形で塗る
         const lo = st.map((x) => x.p25), hi = st.map((x) => x.p75), fill = css("--other");
         const idx0 = TY.map((_, y) => y).filter((y) => lo[y] != null && hi[y] != null);
-        series.push({ type: "custom", xAxisIndex: i, yAxisIndex: i, silent: true, tooltip: { show: false }, z: 1, clip: true,
+        series.push({ type: "custom", xAxisIndex: i, yAxisIndex: i, silent: true, tooltip: { show: false }, z: 4, clip: true,
           data: idx0.map((y) => [y, lo[y], hi[y]]), encode: { x: 0, y: [1, 2] },
           renderItem: (params, api) => {
             if (params.dataIndex !== 0) return null;
@@ -110,11 +110,11 @@ function multiPanels(id, keys, opt) {
             return { type: "polygon", shape: { points: pts }, style: { fill, opacity: 0.55 } };
           } });
       }
-      series.push({ type: "line", name: "他院の中央値", xAxisIndex: i, yAxisIndex: i, data: xy(st.map((s) => s.med)), symbol: "none", z: 3,
+      series.push({ type: "line", name: "他院の中央値", xAxisIndex: i, yAxisIndex: i, data: xy(st.map((s) => s.med)), symbol: "none", z: 5,
         lineStyle: { color: css("--ref"), width: 1.5, type: [5, 3] }, itemStyle: { color: css("--ref") }, _st: st });
     }
     series.push({ type: "line", xAxisIndex: i, yAxisIndex: i, data: [], z: 0, silent: true, tooltip: { show: false }, ...g });
-    series.push({ type: "line", name: "自院", xAxisIndex: i, yAxisIndex: i, data: xy(sv), symbol: "circle", symbolSize: 7, z: 5,
+    series.push({ type: "line", name: "自院", xAxisIndex: i, yAxisIndex: i, data: xy(sv), symbol: "circle", symbolSize: 7, z: 6,
       lineStyle: { color: css("--self"), width: 2 }, itemStyle: { color: css("--self"), borderColor: css("--surface-1"), borderWidth: 1.5 }, connectNulls: false });
   });
   const stOf = {};
@@ -161,13 +161,13 @@ function renderTrendLines() {
   const shown = others.slice(0, LIM), st = TY.map((_, y) => yearStats(k, y, S.others));
   const series = shown.map((h) => ({ type: "line", name: h.short, data: xy(TY.map((_, y) => tv(h, k, y))), symbol: "none", z: 1,
     lineStyle: { color: css("--other-strong"), width: 1, opacity: 0.55 }, emphasis: { focus: "series", lineStyle: { width: 2, opacity: 1 } }, _h: h }));
-  series.push({ type: "line", name: "他院の中央値", data: xy(st.map((s) => s.med)), symbol: "none", z: 3, lineStyle: { color: css("--ref"), width: 2, type: [5, 3] }, ...guides(true, true) });
+  series.push({ type: "line", name: "他院の中央値", data: xy(st.map((s) => s.med)), symbol: "none", z: 5, lineStyle: { color: css("--ref"), width: 2, type: [5, 3] }, ...guides(true, true) });
   series.push({ type: "line", name: "自院", data: xy(TY.map((_, y) => tv(self, k, y))), symbol: "circle", symbolSize: 8, z: 5,
     lineStyle: { color: css("--self"), width: 2.5 }, itemStyle: { color: css("--self"), borderColor: css("--surface-1"), borderWidth: 2 },
     endLabel: { show: true, formatter: () => self.short, color: css("--text-primary"), fontSize: 11, fontWeight: 600, width: 104, overflow: "truncate" } });
   chart("c-tr-lines").setOption({
     ...b, grid: { left: 12, right: 116, top: 56, bottom: 30, containLabel: true },
-    legend: { top: 0, left: 0, data: ["自院", "他院の中央値"], itemWidth: 16, itemHeight: 3, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
+    legend: { top: 0, left: 0, data: ["自院", "他院の中央値"], itemWidth: 20, itemHeight: 3, itemStyle: { borderWidth: 0 }, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
     tooltip: { ...b.tooltip, trigger: "axis", formatter: (ps) => {
       const y = ps[0].dataIndex, v = tv(self, k, y), r = rankYear(k, y);
       return `<div style="margin-bottom:2px">${TYL[y]}</div>` + tipRow(m.fmt(v) + (v != null ? unitOf(m) : ""), "自院" + (r ? `（${r.rank}位 / ${r.n}施設）` : "")) +
@@ -258,7 +258,7 @@ function renderTrendMdc() {
   const ss = [{ name: "自院：" + self.short, data: shareOf(self), color: css("--self"), w: 2.5, z: 5 }].concat(top.map((h, i) => ({ name: h.short, data: shareOf(h), color: slots[i], w: 1.5, z: 3 })));
   chart("c-tr-mdc-share").setOption({
     ...b, grid: { left: 12, right: 24, top: 56, bottom: 30, containLabel: true },
-    legend: { top: 0, left: 0, itemWidth: 14, itemHeight: 3, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
+    legend: { top: 0, left: 0, itemWidth: 20, itemHeight: 3, itemStyle: { borderWidth: 0 }, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
     tooltip: { ...b.tooltip, trigger: "axis", formatter: (ps) => `<div style="margin-bottom:2px">${TYL[ps[0].dataIndex]}・${esc(mlab)}</div>` +
       ps.slice().sort((a, c) => (c.value || 0) - (a.value || 0)).map((p) => `<div><span style="display:inline-block;width:10px;height:2px;background:${p.color};vertical-align:middle;margin-right:6px"></span><b>${F.pct(p.value)}</b> <span style="color:${css("--text-secondary")}">${esc(p.seriesName)}</span></div>`).join("") },
     xAxis: xYears(b),
