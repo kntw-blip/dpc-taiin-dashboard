@@ -1,0 +1,241 @@
+saved R6 type_surg 195774
+saved R6 type_op1 245152
+saved R6 type_op2 245152
+R6 surg 17 files
+saved dis/R6/surg_MDC01.csv.gz 25242
+saved dis/R6/surg_MDC02.csv.gz 17782
+saved dis/R6/surg_MDC03.csv.gz 16464
+saved dis/R6/surg_MDC04.csv.gz 32830
+saved dis/R6/surg_MDC05.csv.gz 41404
+saved dis/R6/surg_MDC06.csv.gz 129740
+saved dis/R6/surg_MDC07.csv.gz 32514
+saved dis/R6/surg_MDC08.csv.gz 3372
+saved dis/R6/surg_MDC09.csv.gz 7298
+saved dis/R6/surg_MDC10.csv.gz 7536
+saved dis/R6/surg_MDC11.csv.gz 44434
+saved dis/R6/surg_MDC12.csv.gz 24402
+saved dis/R6/surg_MDC13.csv.gz 12176
+saved dis/R6/surg_MDC14.csv.gz 6366
+saved dis/R6/surg_MDC15.csv.gz 110
+saved dis/R6/surg_MDC16.csv.gz 44960
+saved dis/R6/surg_MDC18.csv.gz 7106
+R6 op1 18 files
+saved dis/R6/op1_MDC01.csv.gz 28300
+saved dis/R6/op1_MDC02.csv.gz 8070
+saved dis/R6/op1_MDC03.csv.gz 6162
+saved dis/R6/op1_MDC04.csv.gz 15066
+saved dis/R6/op1_MDC05.csv.gz 38286
+saved dis/R6/op1_MDC06.csv.gz 81370
+saved dis/R6/op1_MDC07.csv.gz 23974
+saved dis/R6/op1_MDC08.csv.gz 7136
+saved dis/R6/op1_MDC09.csv.gz 4478
+saved dis/R6/op1_MDC10.csv.gz 2496
+saved dis/R6/op1_MDC11.csv.gz 22252
+saved dis/R6/op1_MDC12.csv.gz 6646
+saved dis/R6/op1_MDC13.csv.gz 626
+saved dis/R6/op1_MDC14.csv.gz 1948
+saved dis/R6/op1_MDC15.csv.gz 1950
+saved dis/R6/op1_MDC16.csv.gz 38908
+saved dis/R6/op1_MDC17.csv.gz 548
+saved dis/R6/op1_MDC18.csv.gz 1334
+saved R5 type_surg 196749
+saved R5 type_op1 161051
+saved R5 type_op2 241922
+R5 surg 17 files
+saved dis/R5/surg_MDC01.csv.gz 24368
+saved dis/R5/surg_MDC02.csv.gz 16700
+saved dis/R5/surg_MDC03.csv.gz 15782
+saved dis/R5/surg_MDC04.csv.gz 31402
+saved dis/R5/surg_MDC05.csv.gz 45656
+saved dis/R5/surg_MDC06.csv.gz 127354
+saved dis/R5/surg_MDC07.csv.gz 31070
+saved dis/R5/surg_MDC08.csv.gz 3380
+saved dis/R5/surg_MDC09.csv.gz 7248
+saved dis/R5/surg_MDC10.csv.gz 7280
+saved dis/R5/surg_MDC11.csv.gz 42394
+saved dis/R5/surg_MDC12.csv.gz 24350
+saved dis/R5/surg_MDC13.csv.gz 11930
+saved dis/R5/surg_MDC14.csv.gz 6426
+saved dis/R5/surg_MDC15.csv.gz 106
+saved dis/R5/surg_MDC16.csv.gz 50160
+saved dis/R5/surg_MDC18.csv.gz 7008
+R5 op1 18 files
+saved dis/R5/op1_MDC01.csv.gz 27252
+saved dis/R5/op1_MDC02.csv.gz 7578
+saved dis/R5/op1_MDC03.csv.gz 6038
+saved dis/R5/op1_MDC04.csv.gz 11498
+saved dis/R5/op1_MDC05.csv.gz 38056
+saved dis/R5/op1_MDC06.csv.gz 83710
+saved dis/R5/op1_MDC07.csv.gz 23156
+saved dis/R5/op1_MDC08.csv.gz 6878
+saved dis/R5/op1_MDC09.csv.gz 4456
+saved dis/R5/op1_MDC10.csv.gz 2404
+saved dis/R5/op1_MDC11.csv.gz 21666
+saved dis/R5/op1_MDC12.csv.gz 6704
+saved dis/R5/op1_MDC13.csv.gz 550
+saved dis/R5/op1_MDC14.csv.gz 2002
+saved dis/R5/op1_MDC15.csv.gz 2020
+saved dis/R5/op1_MDC16.csv.gz 38188
+saved dis/R5/op1_MDC17.csv.gz 486
+saved dis/R5/op1_MDC18.csv.gz 1172
+saved R4 type_surg 322949
+saved R4 type_op1 248163
+saved R4 type_op2 380954
+R4 surg 17 files
+saved dis/R4/surg_MDC01.csv.gz 23802
+saved dis/R4/surg_MDC02.csv.gz 16640
+saved dis/R4/surg_MDC03.csv.gz 14276
+saved dis/R4/surg_MDC04.csv.gz 28880
+saved dis/R4/surg_MDC05.csv.gz 44644
+saved dis/R4/surg_MDC06.csv.gz 126030
+saved dis/R4/surg_MDC07.csv.gz 29174
+saved dis/R4/surg_MDC08.csv.gz 3132
+saved dis/R4/surg_MDC09.csv.gz 7030
+saved dis/R4/surg_MDC10.csv.gz 6690
+saved dis/R4/surg_MDC11.csv.gz 41176
+saved dis/R4/surg_MDC12.csv.gz 24326
+saved dis/R4/surg_MDC13.csv.gz 11336
+saved dis/R4/surg_MDC14.csv.gz 6390
+saved dis/R4/surg_MDC15.csv.gz 70
+saved dis/R4/surg_MDC16.csv.gz 47140
+saved dis/R4/surg_MDC18.csv.gz 6736
+R4 op1 18 files
+saved dis/R4/op1_MDC01.csv.gz 26436
+saved dis/R4/op1_MDC02.csv.gz 7556
+saved dis/R4/op1_MDC03.csv.gz 5714
+saved dis/R4/op1_MDC04.csv.gz 10750
+saved dis/R4/op1_MDC05.csv.gz 37468
+saved dis/R4/op1_MDC06.csv.gz 83060
+saved dis/R4/op1_MDC07.csv.gz 21856
+saved dis/R4/op1_MDC08.csv.gz 6284
+saved dis/R4/op1_MDC09.csv.gz 4364
+saved dis/R4/op1_MDC10.csv.gz 2276
+saved dis/R4/op1_MDC11.csv.gz 21578
+saved dis/R4/op1_MDC12.csv.gz 6706
+saved dis/R4/op1_MDC13.csv.gz 498
+saved dis/R4/op1_MDC14.csv.gz 1950
+saved dis/R4/op1_MDC15.csv.gz 1678
+saved dis/R4/op1_MDC16.csv.gz 36062
+saved dis/R4/op1_MDC17.csv.gz 424
+saved dis/R4/op1_MDC18.csv.gz 1102
+saved R3 type_surg 321193
+saved R3 type_op1 247289
+saved R3 type_op2 380085
+R3 surg 17 files
+saved dis/R3/surg_MDC01.csv.gz 24812
+saved dis/R3/surg_MDC02.csv.gz 17344
+saved dis/R3/surg_MDC03.csv.gz 14706
+saved dis/R3/surg_MDC04.csv.gz 28476
+saved dis/R3/surg_MDC05.csv.gz 44648
+saved dis/R3/surg_MDC06.csv.gz 130000
+saved dis/R3/surg_MDC07.csv.gz 29544
+saved dis/R3/surg_MDC08.csv.gz 3172
+saved dis/R3/surg_MDC09.csv.gz 7210
+saved dis/R3/surg_MDC10.csv.gz 6644
+saved dis/R3/surg_MDC11.csv.gz 41124
+saved dis/R3/surg_MDC12.csv.gz 25272
+saved dis/R3/surg_MDC13.csv.gz 10876
+saved dis/R3/surg_MDC14.csv.gz 6418
+saved dis/R3/surg_MDC15.csv.gz 72
+saved dis/R3/surg_MDC16.csv.gz 45534
+saved dis/R3/surg_MDC18.csv.gz 7192
+R3 op1 18 files
+saved dis/R3/op1_MDC01.csv.gz 27514
+saved dis/R3/op1_MDC02.csv.gz 7848
+saved dis/R3/op1_MDC03.csv.gz 5722
+saved dis/R3/op1_MDC04.csv.gz 10460
+saved dis/R3/op1_MDC05.csv.gz 37798
+saved dis/R3/op1_MDC06.csv.gz 83766
+saved dis/R3/op1_MDC07.csv.gz 21990
+saved dis/R3/op1_MDC08.csv.gz 6854
+saved dis/R3/op1_MDC09.csv.gz 4486
+saved dis/R3/op1_MDC10.csv.gz 2386
+saved dis/R3/op1_MDC11.csv.gz 24430
+saved dis/R3/op1_MDC12.csv.gz 6930
+saved dis/R3/op1_MDC13.csv.gz 506
+saved dis/R3/op1_MDC14.csv.gz 1958
+saved dis/R3/op1_MDC15.csv.gz 1720
+saved dis/R3/op1_MDC16.csv.gz 35572
+saved dis/R3/op1_MDC17.csv.gz 400
+saved dis/R3/op1_MDC18.csv.gz 1134
+saved R2 type_surg 321300
+saved R2 type_op1 247664
+saved R2 type_op2 380625
+R2 surg 17 files
+saved dis/R2/surg_MDC01.csv.gz 24658
+saved dis/R2/surg_MDC02.csv.gz 17058
+saved dis/R2/surg_MDC03.csv.gz 14736
+saved dis/R2/surg_MDC04.csv.gz 28548
+saved dis/R2/surg_MDC05.csv.gz 44698
+saved dis/R2/surg_MDC06.csv.gz 130568
+saved dis/R2/surg_MDC07.csv.gz 28930
+saved dis/R2/surg_MDC08.csv.gz 3014
+saved dis/R2/surg_MDC09.csv.gz 6980
+saved dis/R2/surg_MDC10.csv.gz 6496
+saved dis/R2/surg_MDC11.csv.gz 40966
+saved dis/R2/surg_MDC12.csv.gz 24408
+saved dis/R2/surg_MDC13.csv.gz 11296
+saved dis/R2/surg_MDC14.csv.gz 6236
+saved dis/R2/surg_MDC15.csv.gz 64
+saved dis/R2/surg_MDC16.csv.gz 44614
+saved dis/R2/surg_MDC18.csv.gz 7090
+R2 op1 18 files
+saved dis/R2/op1_MDC01.csv.gz 27662
+saved dis/R2/op1_MDC02.csv.gz 8016
+saved dis/R2/op1_MDC03.csv.gz 5628
+saved dis/R2/op1_MDC04.csv.gz 10606
+saved dis/R2/op1_MDC05.csv.gz 37912
+saved dis/R2/op1_MDC06.csv.gz 84680
+saved dis/R2/op1_MDC07.csv.gz 21726
+saved dis/R2/op1_MDC08.csv.gz 7018
+saved dis/R2/op1_MDC09.csv.gz 4400
+saved dis/R2/op1_MDC10.csv.gz 2456
+saved dis/R2/op1_MDC11.csv.gz 24348
+saved dis/R2/op1_MDC12.csv.gz 6922
+saved dis/R2/op1_MDC13.csv.gz 474
+saved dis/R2/op1_MDC14.csv.gz 1818
+saved dis/R2/op1_MDC15.csv.gz 1462
+saved dis/R2/op1_MDC16.csv.gz 34784
+saved dis/R2/op1_MDC17.csv.gz 526
+saved dis/R2/op1_MDC18.csv.gz 1106
+saved R1 type_surg 325757
+saved R1 type_op1 249899
+saved R1 type_op2 5087349
+R1 surg 17 files
+saved dis/R1/surg_MDC01.csv.gz 26310
+saved dis/R1/surg_MDC02.csv.gz 18118
+saved dis/R1/surg_MDC03.csv.gz 17876
+saved dis/R1/surg_MDC04.csv.gz 31746
+saved dis/R1/surg_MDC05.csv.gz 46406
+saved dis/R1/surg_MDC06.csv.gz 135496
+saved dis/R1/surg_MDC07.csv.gz 32100
+saved dis/R1/surg_MDC08.csv.gz 3464
+saved dis/R1/surg_MDC09.csv.gz 7306
+saved dis/R1/surg_MDC10.csv.gz 12040
+saved dis/R1/surg_MDC11.csv.gz 41478
+saved dis/R1/surg_MDC12.csv.gz 25670
+saved dis/R1/surg_MDC13.csv.gz 11596
+saved dis/R1/surg_MDC14.csv.gz 6890
+saved dis/R1/surg_MDC15.csv.gz 96
+saved dis/R1/surg_MDC16.csv.gz 48538
+saved dis/R1/surg_MDC18.csv.gz 7564
+R1 op1 18 files
+saved dis/R1/op1_MDC01.csv.gz 29926
+saved dis/R1/op1_MDC02.csv.gz 8310
+saved dis/R1/op1_MDC03.csv.gz 6424
+saved dis/R1/op1_MDC04.csv.gz 11644
+saved dis/R1/op1_MDC05.csv.gz 40176
+saved dis/R1/op1_MDC06.csv.gz 88448
+saved dis/R1/op1_MDC07.csv.gz 22960
+saved dis/R1/op1_MDC08.csv.gz 8062
+saved dis/R1/op1_MDC09.csv.gz 4652
+saved dis/R1/op1_MDC10.csv.gz 3236
+saved dis/R1/op1_MDC11.csv.gz 25374
+saved dis/R1/op1_MDC12.csv.gz 6886
+saved dis/R1/op1_MDC13.csv.gz 614
+saved dis/R1/op1_MDC14.csv.gz 2176
+saved dis/R1/op1_MDC15.csv.gz 2202
+saved dis/R1/op1_MDC16.csv.gz 36988
+saved dis/R1/op1_MDC17.csv.gz 672
+saved dis/R1/op1_MDC18.csv.gz 1188
+228 files, 0 errors
