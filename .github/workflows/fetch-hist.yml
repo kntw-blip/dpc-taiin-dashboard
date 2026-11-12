@@ -1,0 +1,35 @@
+name: fetch-hist
+# 過去年度（令和元年度〜令和5年度）の集計表を取得し、raw-hist ブランチへ保存する
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [scripts/fetch_hist.py, .github/workflows/fetch-hist.yml]
+permissions:
+  contents: write
+concurrency:
+  group: fetch-hist
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests beautifulsoup4
+      - name: Fetch
+        run: python scripts/fetch_hist.py hist 2>&1 | tee fetch_log.txt
+      - name: Check size and push to raw-hist branch
+        run: |
+          find hist -type f -size +95M -print -delete | sed 's/^/REMOVED_TOO_LARGE /' | tee -a fetch_log.txt
+          cp fetch_log.txt hist/
+          find hist -type f -printf "%s %p\n" | sort -k2 > hist/files.txt
+          echo "::notice title=files::$(du -sh hist | cut -f1) / $(wc -l < hist/files.txt) files%0A$(grep -E 'FAILED|REMOVED|files,' fetch_log.txt | tail -c 2000 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          cd hist
+          git init -q -b raw-hist
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "historical raw data $(date -u +%FT%TZ)"
+          git -c http.postBuffer=524288000 push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" raw-hist 2> push_err.txt || { echo "::error title=push::$(tail -c 2000 push_err.txt | sed ':a;N;$!ba;s/\n/%0A/g')"; exit 1; }
