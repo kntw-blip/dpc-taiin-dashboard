@@ -1,0 +1,390 @@
+{
+ "files": [
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__施設概要表_551KB__001468611.xlsx",
+   "bytes": 563251,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468611.xlsx",
+   "text": "施設概要表［551KB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__２_分析対象外としたデータの状況_680KB__001468641.xlsx",
+   "bytes": 695626,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468641.xlsx",
+   "text": "（２）分析対象外としたデータの状況［680KB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__３_在院日数の状況_4.9MB__001468642.xlsx",
+   "bytes": 5040082,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468642.xlsx",
+   "text": "（３）在院日数の状況［4.9MB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__４_在院日数の平均の差_722KB__001468644.xlsx",
+   "bytes": 738420,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468644.xlsx",
+   "text": "（４）在院日数の平均の差［722KB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__５_救急車による搬送の有無_649KB__001468645.xlsx",
+   "bytes": 664282,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468645.xlsx",
+   "text": "（５）救急車による搬送の有無［649KB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__６_救急医療入院_1.1MB__001468646.xlsx",
+   "bytes": 1071298,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468646.xlsx",
+   "text": "（６）救急医療入院［1.1MB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__７_他院よりの紹介の有無_651KB__001468647.xlsx",
+   "bytes": 666101,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468647.xlsx",
+   "text": "（７）他院よりの紹介の有無［651KB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__１２_施設別MDC比率_1.1MB__001468652.xlsx",
+   "bytes": 1144335,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468652.xlsx",
+   "text": "（１２）施設別MDC比率［1.1MB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__１４_在院日数の平均の差_MDC別_5.1MB__001468661.xlsx",
+   "bytes": 5306600,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468661.xlsx",
+   "text": "（１４）在院日数の平均の差_MDC別［5.1MB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・施設概要表_施設概要表_551KB_・__１５_手術化学療法放射線療法全身麻酔について_722KB__001468662.xlsx",
+   "bytes": 738499,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468662.xlsx",
+   "text": "（１５）手術化学療法放射線療法全身麻酔について［722KB］"
+  },
+  {
+   "year": "R5",
+   "path": "R5/・参考資料２__４_救急車による搬送の有無の医療機関別MDC別集計_970KB__001468875.xlsx",
+   "bytes": 993121,
+   "url": "https://www.mhlw.go.jp/content/12404000/001468875.xlsx",
+   "text": "（４）救急車による搬送の有無の医療機関別MDC別集計［970KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・施設概要表__施設概要表_650KB__001234038.xlsx",
+   "bytes": 665221,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234038.xlsx",
+   "text": "施設概要表［650KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__２_分析対象外としたデータの状況_793KB__001234077.xlsx",
+   "bytes": 811516,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234077.xlsx",
+   "text": "（２）分析対象外としたデータの状況［793KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__３_在院日数の状況_5.5MB__001234054.xlsx",
+   "bytes": 5751619,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234054.xlsx",
+   "text": "（３）在院日数の状況［5.5MB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__４_在院日数の平均の差_805KB__001234055.xlsx",
+   "bytes": 823431,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234055.xlsx",
+   "text": "（４）在院日数の平均の差［805KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__５_救急車による搬送の有無_729KB__001234057.xlsx",
+   "bytes": 746459,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234057.xlsx",
+   "text": "（５）救急車による搬送の有無［729KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__６_救急医療入院_1.2MB__001234059.xlsx",
+   "bytes": 1239646,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234059.xlsx",
+   "text": "（６）救急医療入院［1.2MB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__７_他院よりの紹介の有無_740KB__001234061.xlsx",
+   "bytes": 757488,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234061.xlsx",
+   "text": "（７）他院よりの紹介の有無［740KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__１２_施設別MDC比率_1.3MB__001234070.xlsx",
+   "bytes": 1297807,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234070.xlsx",
+   "text": "（１２）施設別MDC比率［1.3MB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__１４_在院日数の平均の差_MDC別_5.7MB__001234072.xlsx",
+   "bytes": 5966570,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234072.xlsx",
+   "text": "（１４）在院日数の平均の差_MDC別［5.7MB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料１__１５_手術化学療法放射線療法全身麻酔について_818KB__001234073.xlsx",
+   "bytes": 836960,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234073.xlsx",
+   "text": "（１５）手術化学療法放射線療法全身麻酔について［818KB］"
+  },
+  {
+   "year": "R4",
+   "path": "R4/・参考資料２__４_救急車による搬送の有無の医療機関別MDC別集計_1.2MB__001234084.xlsx",
+   "bytes": 1189322,
+   "url": "https://www.mhlw.go.jp/content/12404000/001234084.xlsx",
+   "text": "（４）救急車による搬送の有無の医療機関別MDC別集計［1.2MB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・施設概要表__施設概要表_607KB__001348829.xlsx",
+   "bytes": 620781,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348829.xlsx",
+   "text": "施設概要表［607KB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__２_分析対象外としたデータの状況_763KB__001348833.xlsx",
+   "bytes": 781217,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348833.xlsx",
+   "text": "（２）分析対象外としたデータの状況［763KB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__３_在院日数の状況_5.0MB__001348834.xlsx",
+   "bytes": 5165102,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348834.xlsx",
+   "text": "（３）在院日数の状況［5.0MB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__４_在院日数の平均の差_791KB__001348835.xlsx",
+   "bytes": 809291,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348835.xlsx",
+   "text": "（４）在院日数の平均の差［791KB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__５_救急車による搬送の有無_702KB__001348836.xlsx",
+   "bytes": 718337,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348836.xlsx",
+   "text": "（５）救急車による搬送の有無［702KB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__６_救急医療入院_1.2MB__001348837.xlsx",
+   "bytes": 1192286,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348837.xlsx",
+   "text": "（６）救急医療入院［1.2MB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__７_他院よりの紹介の有無_707KB__001348838.xlsx",
+   "bytes": 723539,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348838.xlsx",
+   "text": "（７）他院よりの紹介の有無［707KB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__１２_施設別MDC比率_1.3MB__001348843.xlsx",
+   "bytes": 1277677,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348843.xlsx",
+   "text": "（１２）施設別MDC比率［1.3MB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__１４_在院日数の平均の差_MDC別_5.7MB__001348845.xlsx",
+   "bytes": 5889744,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348845.xlsx",
+   "text": "（１４）在院日数の平均の差_MDC別［5.7MB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料１__１５_手術化学療法放射線療法全身麻酔について_792KB__001348846.xlsx",
+   "bytes": 810966,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348846.xlsx",
+   "text": "（１５）手術化学療法放射線療法全身麻酔について［792KB］"
+  },
+  {
+   "year": "R3",
+   "path": "R3/・参考資料２__４_救急車による搬送の有無の医療機関別MDC別集計_1.1MB__001348859.xlsx",
+   "bytes": 1150639,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348859.xlsx",
+   "text": "（４）救急車による搬送の有無の医療機関別MDC別集計［1.1MB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・施設概要表__施設概要表_575KB__001348984.xlsx",
+   "bytes": 588641,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348984.xlsx",
+   "text": "施設概要表［575KB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__２_分析対象外としたデータの状況_722KB__001348986.xlsx",
+   "bytes": 739298,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348986.xlsx",
+   "text": "（２）分析対象外としたデータの状況［722KB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__３_在院日数の状況_4.4MB__001348987.xlsx",
+   "bytes": 4550454,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348987.xlsx",
+   "text": "（３）在院日数の状況［4.4MB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__４_在院日数の平均の差_792KB__001348988.xlsx",
+   "bytes": 810910,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348988.xlsx",
+   "text": "（４）在院日数の平均の差［792KB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__５_救急車による搬送の有無_662KB__001348989.xlsx",
+   "bytes": 677488,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348989.xlsx",
+   "text": "（５）救急車による搬送の有無［662KB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__６_救急医療入院_1.1MB__001348990.xlsx",
+   "bytes": 1131246,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348990.xlsx",
+   "text": "（６）救急医療入院［1.1MB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__７_他院よりの紹介の有無_671KB__001348991.xlsx",
+   "bytes": 686955,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348991.xlsx",
+   "text": "（７）他院よりの紹介の有無［671KB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__１２_施設別MDC比率_1.2MB__001348996.xlsx",
+   "bytes": 1236922,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348996.xlsx",
+   "text": "（１２）施設別MDC比率［1.2MB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__１４_在院日数の平均の差_MDC別_5.5MB__001348998.xlsx",
+   "bytes": 5732642,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348998.xlsx",
+   "text": "（１４）在院日数の平均の差_MDC別［5.5MB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料１__１５_手術化学療法放射線療法全身麻酔について_764KB__001348999.xlsx",
+   "bytes": 781894,
+   "url": "https://www.mhlw.go.jp/content/12404000/001348999.xlsx",
+   "text": "（１５）手術化学療法放射線療法全身麻酔について［764KB］"
+  },
+  {
+   "year": "R2",
+   "path": "R2/・参考資料２__４_救急車による搬送の有無の医療機関別MDC別集計_1.1MB__001349012.xlsx",
+   "bytes": 1085095,
+   "url": "https://www.mhlw.go.jp/content/12404000/001349012.xlsx",
+   "text": "（４）救急車による搬送の有無の医療機関別MDC別集計［1.1MB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・施設概要表__施設概要表_560KB__001350398.xlsx",
+   "bytes": 572853,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350398.xlsx",
+   "text": "施設概要表［560KB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__２_分析対象外としたデータの状況_696KB__001350400.xlsx",
+   "bytes": 711795,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350400.xlsx",
+   "text": "（２）分析対象外としたデータの状況［696KB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__３_在院日数の状況_3.5MB__001350401.xlsx",
+   "bytes": 3614244,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350401.xlsx",
+   "text": "（３）在院日数の状況［3.5MB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__４_在院日数の平均の差_804KB__001350402.xlsx",
+   "bytes": 822550,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350402.xlsx",
+   "text": "（４）在院日数の平均の差［804KB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__５_救急車による搬送の有無_632KB__001350406.xlsx",
+   "bytes": 646169,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350406.xlsx",
+   "text": "（５）救急車による搬送の有無［632KB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__６_救急医療入院_1.1MB__001350407.xlsx",
+   "bytes": 1073361,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350407.xlsx",
+   "text": "（６）救急医療入院［1.1MB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__７_他院よりの紹介の有無_635KB__001350408.xlsx",
+   "bytes": 649568,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350408.xlsx",
+   "text": "（７）他院よりの紹介の有無［635KB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__１２_施設別MDC比率_1.2MB__001350417.xlsx",
+   "bytes": 1222442,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350417.xlsx",
+   "text": "（１２）施設別MDC比率［1.2MB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__１４_在院日数の平均の差_MDC別_5.5MB__001350419.xlsx",
+   "bytes": 5705086,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350419.xlsx",
+   "text": "（１４）在院日数の平均の差_MDC別［5.5MB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料１__１５_手術化学療法放射線療法全身麻酔について_745KB__001350420.xlsx",
+   "bytes": 762197,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350420.xlsx",
+   "text": "（１５）手術化学療法放射線療法全身麻酔について［745KB］"
+  },
+  {
+   "year": "R1",
+   "path": "R1/・参考資料２__４_救急車による搬送の有無の医療機関別MDC別集計_1.1MB__001350438.xlsx",
+   "bytes": 1055105,
+   "url": "https://www.mhlw.go.jp/content/12404000/001350438.xlsx",
+   "text": "（４）救急車による搬送の有無の医療機関別MDC別集計［1.1MB］"
+  }
+ ],
+ "errors": []
+}
