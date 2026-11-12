@@ -222,3 +222,20 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
 .chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); align-self: flex-end; padding-bottom: 8px; }
 .chk input { accent-color: var(--self); width: 16px; height: 16px; }
 .tr-warn { color: var(--text-secondary); font-size: 13px; margin: 2px 0; }
+
+/* スマホ：条件欄の折りたたみ（下にスクロールすると1行の要約に縮む。要約をタップで開く） */
+.f-mini, .f-close { display: none; }
+@media (max-width: 720px) {
+  html { overflow-anchor: none; }  /* 折りたたみ時のずれは filters.js で補正する */
+  .filters.has-self .f-close { display: inline-block; }
+  .filters.collapsed { padding: 6px 0; gap: 0; }
+  .filters.collapsed > :not(.f-mini) { display: none !important; }
+  .filters.collapsed .f-mini { display: block; width: 100%; }
+  .f-mini-btn { width: 100%; display: flex; align-items: center; gap: 10px; padding: 6px 10px; font: inherit; text-align: left; cursor: pointer;
+    background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border); border-radius: 10px; }
+  .f-mini-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.35; }
+  .f-mini-text b { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .f-mini-text span { font-size: 12px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .f-mini-act { flex: none; font-size: 12px; font-weight: 600; color: var(--self); border: 1px solid var(--self); border-radius: 8px; padding: 4px 8px; }
+  .f-mini-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
+}

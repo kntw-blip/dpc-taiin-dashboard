@@ -140,6 +140,7 @@
     ["表示中の画面を他の人と共有したい", "ブラウザのアドレス欄のURLをそのまま送ってください。自院・比較軸・比較対象の条件がURLに含まれています。"],
     ["データをExcelで使いたい", "ページ下部の「比較表」の「CSVダウンロード」から、比較対象の主要指標をダウンロードできます。各チャートの「表」ボタンでも数値を確認できます。"],
     ["データの時点は？", "診療実績は令和6年度（令和6年6月〜令和7年5月の退院）、法人（開設者）は令和8年10月時点です。「11 経年推移」の令和元〜5年度は各年度の4月〜翌3月の退院です。"],
+    ["スマホで上の条件欄が1行になった", "スマホでは、下にスクロールすると条件欄が1行の要約（病院名・比較軸・比較対象）に縮みます。「条件を変更」をタップすると開き、「条件を閉じる」で戻せます。ページの一番上に戻ると自動で開きます。"],
     ["経年推移で令和5年度と令和6年度の間に点線があるのはなぜ？", "令和6年度の調査から集計期間が6月〜翌5月に変わったためです。令和5年度までは4月〜翌3月なので、この間だけ期間が2か月ずれます。"],
     ["過去の年度の値がない病院があるのはなぜ？", "その年度に調査に参加していなかった病院です（出来高算定病院は年々参加が増えています）。改称・移転・合併があっても、厚生労働省の「通番」でつながる病院は同じ病院として表示しています。"],
   ];
@@ -252,10 +253,12 @@
     if (!tour) return;
     tour.hole.remove(); tour.box.remove(); window.removeEventListener("resize", tour.place); window.removeEventListener("scroll", tour.place, true);
     document.removeEventListener("keydown", tour.key); tour = null;
+    if (window.DPCFilters) window.DPCFilters.hold(false);
     try { localStorage.setItem("dpc_tour_done", "1"); } catch (e) {}
   }
   function startTour() {
     closePop(); endTour();
+    if (window.DPCFilters) window.DPCFilters.hold(true);   // スマホで条件欄が縮んでいてもツアー中は開く
     const hole = el("div", "tour-hole"), box = el("div", "tour-box");
     box.setAttribute("role", "dialog"); box.setAttribute("aria-live", "polite");
     vizRoot.append(hole, box);

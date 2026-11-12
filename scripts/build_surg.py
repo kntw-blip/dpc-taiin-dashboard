@@ -8,6 +8,8 @@ usage: python build_surg.py RAW_DIR OUT_DIR
 """
 import json, re, sys, glob, pathlib, collections, unicodedata
 from python_calamine import CalamineWorkbook
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from dupmerge import merge_dups, MERGED
 
 RAW, OUT = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
 nk = lambda s: unicodedata.normalize("NFKC", str(s if s is not None else "")).strip()
@@ -85,7 +87,8 @@ for f in sorted(glob.glob(str(RAW / "dpc_surg" / "surg_MDC*.xlsx"))):
             nm_all, ks = detail(d, code)
             cats.append([f"{d}-{code}", d, dn, code, label(d, code), ks, nm_all])
             if label(d, code).startswith("手術区分"): stats["no_label"] += 1
-    for r in rows[4:]:
+    l2c = {los[key]: cnt[key] for key in los if key in cnt}   # 在院日数の列 → 件数の列（合併病院の加重平均用）
+    for r in merge_dups(rows[4:], lambda j: l2c.get(j, "sum")):
         k = nk(r[0])
         if not re.fullmatch(r"\d{5}", k): continue
         for key, j in cnt.items():
@@ -98,4 +101,5 @@ for f in sorted(glob.glob(str(RAW / "dpc_surg" / "surg_MDC*.xlsx"))):
 OUT.mkdir(parents=True, exist_ok=True)
 p = OUT / "surg.json"
 p.write_text(json.dumps({"cats": cats, "h": H}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+print(f"merged in-year: {sorted(MERGED)}")
 print(f"surg.json: cats {len(cats)}, hospitals {len(H)}, cells {stats['cells']}, no_label {stats['no_label']}, {p.stat().st_size/1e6:.2f} MB")

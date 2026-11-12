@@ -1073,6 +1073,7 @@ function renderAll() {
   if (S.surg) renderSurg();
   if (S.sev) renderSev();
   if (typeof renderTrend === "function") renderTrend();
+  if (window.DPCFilters) window.DPCFilters.update();
   refreshOpenTables();
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);
   if (S.axis === "peer") { u.searchParams.set("region", S.region); u.searchParams.set("n", S.peerN); } else { u.searchParams.delete("region"); u.searchParams.delete("n"); }

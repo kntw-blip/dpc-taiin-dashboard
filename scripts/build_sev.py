@@ -9,6 +9,8 @@ usage: python build_sev.py RAW_DIR OUT_DIR
 """
 import json, re, sys, glob, pathlib, unicodedata
 from python_calamine import CalamineWorkbook
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from dupmerge import merge_dups, sub_of, kid, fnum, MERGED
 
 RAW, OUT = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
 nk = lambda s: unicodedata.normalize("NFKC", str(s if s is not None else "")).replace("\n", "").strip()
@@ -27,7 +29,11 @@ def data_rows(rows): return [r for r in rows if re.fullmatch(r"\d{5}", nk(r[0]))
 
 # 分母：一般病棟に入院があったデータ数
 den = {}
-for r in data_rows(book("１_分析対象外としたデータの状況").get_sheet_by_name("分析対象外").to_python(skip_empty_area=False)):
+_rows = book("１_分析対象外としたデータの状況").get_sheet_by_name("分析対象外").to_python(skip_empty_area=False)
+EXT = {}   # 年度の途中で合併した病院の2行を、一般病棟のデータ数で重み付けしてまとめる
+for r in _rows:
+    if kid(r[0]): EXT.setdefault(kid(r[0]), {})[sub_of(r)] = {"den": fnum(r[5])}
+for r in data_rows(merge_dups(_rows, lambda j: "sum")):
     v = num(r[5], 0)
     if v: den[nk(r[0])] = int(v)
 
@@ -37,7 +43,7 @@ FIM_COLS = ["回復期リハ等の病床数", "FIM入力対象割合", "平均�
             "入棟時 運動13〜26点", "入棟時 運動27〜52点", "入棟時 運動53〜91点", "入棟時 認知5〜10点", "入棟時 認知11〜20点", "入棟時 認知21〜35点", "入棟時 不明",
             "退棟時 運動13〜26点", "退棟時 運動27〜52点", "退棟時 運動53〜91点", "退棟時 認知5〜10点", "退棟時 認知11〜20点", "退棟時 認知21〜35点", "退棟時 不明", "死亡"]
 fim = {}
-for r in data_rows(rows):
+for r in data_rows(merge_dups(rows, lambda j: "last" if j == 3 else "den", EXT)):
     v = [num(x) for x in r[3:22]]
     if v[1]: fim[nk(r[0])] = v
 
@@ -87,7 +93,7 @@ for sheet, group, title, dist, kpi_label, kpi_idx, quality, note, labels in SPEC
         kpi_idx = [i for i, c in enumerate(cols) if "規定因子" in c]
         cols = [("SpO2≦90%（FiO2 35%以下で維持）の割合" if "要さない" in c else "SpO2≦90%（維持にFiO2 35%超が必要）の割合" if "SpO2について" in c else c) for c in cols]
     h = {}
-    for r in data_rows(rows):
+    for r in data_rows(merge_dups(rows, lambda j: "den", EXT)):
         v = [num(x) for x in r[3:3 + len(cols)]]
         if v[0]: h[nk(r[0])] = v
     items.append({"key": sheet, "group": group, "title": title, "cols": cols, "targets": targets, "dist": dist,
@@ -97,4 +103,5 @@ for sheet, group, title, dist, kpi_label, kpi_idx, quality, note, labels in SPEC
 OUT.mkdir(parents=True, exist_ok=True)
 p = OUT / "sev.json"
 p.write_text(json.dumps({"den": den, "fim": {"cols": FIM_COLS, "h": fim}, "items": items}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+print(f"merged in-year: {sorted(MERGED)}")
 print(f"sev.json: den {len(den)}, fim {len(fim)}, items {len(items)}, {p.stat().st_size/1e6:.2f} MB")

@@ -12,6 +12,8 @@ usage: python build_data.py RAW_DIR MATCH_CSV OVERRIDE_CSV OUT_DIR
 import csv, json, re, sys, glob, pathlib, collections, unicodedata, datetime
 from python_calamine import CalamineWorkbook
 from dbfread import DBF
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from dupmerge import merge_dups, ranges, sub_of, kid, fnum, MERGED
 
 RAW, MATCH, OVERRIDE, OUT = map(pathlib.Path, sys.argv[1:5])
 OUT.mkdir(parents=True, exist_ok=True)
@@ -55,8 +57,18 @@ def by_id(rows):
         if re.fullmatch(r"\d{5}", k): d[k] = r
     return d
 
+# ---------- 年度の途中で合併した病院（同じ告示番号が2行）をまとめるための重み ----------
+EXT = collections.defaultdict(dict)
+for r in sheet("施設概要表", "施設概要表"):
+    if kid(r[0]): EXT[kid(r[0])].setdefault(sub_of(r), {})["m6"] = fnum(r[16])
+for r in sheet("２_在院日数の状況", "在院日数の状況"):
+    if kid(r[0]): EXT[kid(r[0])].setdefault(sub_of(r), {}).update({"n5": fnum(r[3]), "n6": fnum(r[11])})
+def msheet(key, name, rule):
+    return merge_dups(sheet(key, name), rule, EXT)
+N5, N6, M6 = "n5", "n6", "m6"
+
 # ---------- 施設概要表 ----------
-fac_rows = sheet("施設概要表", "施設概要表")
+fac_rows = msheet("施設概要表", "施設概要表", ranges((16, 16, "sum")))
 muni_area = {}
 for r in DBF(str(RAW / "geo" / "A38-20_1.dbf"), encoding="cp932"):
     p = PREFS[int(r["A38a_001"][:2]) - 1]; a = r["A38a_004"]
@@ -78,7 +90,7 @@ for r in fac_rows[1:]:
             "type": htype(nk(r[5])), "join": nk(r[5]), "kihon": nk(r[7]) if nk(r[7]) not in ("-", "") else None,
             "b_dpc": num(r[6]), "b_kaifuku": num(r[9]), "b_chiiki": num(r[10]), "b_chiikiiryo": num(r[11]),
             "b_seishin": num(r[12]), "b_ryoyo": num(r[13]), "b_kekkaku": num(r[14]), "b_total": num(r[15]), "months": num(r[16])}
-log.append(f"facilities {len(H)}, no area {sum(1 for h in H.values() if not h['area'])}")
+log.append(f"facilities {len(H)} (merged in-year: {sorted(MERGED)}), no area {sum(1 for h in H.values() if not h['area'])}")
 
 # ---------- 開設者 ----------
 match = {r["kokuji"]: r for r in csv.DictReader(open(MATCH, encoding="utf-8"))}
@@ -113,13 +125,13 @@ for k, h in H.items():
                        "candidate_owner": m.get("owner", ""), "candidate_corp": m.get("corp", ""), "conf": m.get("conf", "N")})
 
 # ---------- (2) 在院日数の状況（一般病棟のみ） ----------
-for k, r in by_id(sheet("２_在院日数の状況", "在院日数の状況")).items():
+for k, r in by_id(msheet("２_在院日数の状況", "在院日数の状況", ranges((3, 3, "sum"), (4, 10, 3), (11, 11, "sum"), (12, 18, 11)))).items():
     if k in H:
         H[k].update({"n5": num(r[3]), "los5": num(r[4], 3), "n6": num(r[11]), "los6": num(r[12], 3), "med6": num(r[16])})
 
 # ---------- (13) 在院日数の指標・患者構成の指標 ----------
 mdcd = collections.defaultdict(dict)
-r13 = sheet("１３_在院日数の平均の差_MDC", "R06全体")
+r13 = msheet("１３_在院日数の平均の差_MDC", "R06全体", lambda j: "sum" if j == 3 or (j >= 11 and (j - 11) % 6 == 0) else "max" if j == 9 else 3 if j <= 10 else 11 + 6 * ((j - 11) // 6))
 nat_mdc = {}
 for r in r13:
     if nk(r[3]) == "全国平均値":
@@ -130,16 +142,16 @@ for k, r in by_id(r13).items():
     if k not in H: continue
     H[k].update({"cmi6": num(r[6], 4), "eff6": num(r[8], 4), "kinds6": num(r[9])})
     mdcd[k]["los"] = [[num(r[11 + 6 * i]), num(r[12 + 6 * i], 2), num(r[14 + 6 * i], 3), num(r[16 + 6 * i], 3)] for i in range(18)]
-for k, r in by_id(sheet("１３_在院日数の平均の差_MDC", "R05全体")).items():
+for k, r in by_id(msheet("１３_在院日数の平均の差_MDC", "R05全体", ranges((3, 3, "sum"), (4, 8, 3)))).items():
     if k in H: H[k].update({"cmi5": num(r[6], 4), "eff5": num(r[8], 4)})
 
 # ---------- (4)(5)(6) 救急車・予定外/救急医療入院・紹介 ----------
-for k, r in by_id(sheet("４_救急車", None)).items():
+for k, r in by_id(msheet("４_救急車", None, ranges((3, 3, N5), (4, 4, N6), (5, 5, N5), (6, 6, M6)))).items():
     if k in H: H[k].update({"amb5": num(r[3], 4), "amb6": num(r[4], 4), "ambm5": num(r[5], 1), "ambm6": num(r[6], 1)})
-for k, r in by_id(sheet("５_救急医療入院", None)).items():
+for k, r in by_id(msheet("５_救急医療入院", None, ranges((3, 3, N5), (4, 4, N6), (5, 5, N5), (6, 6, N6), (7, 7, N5), (8, 8, M6), (9, 9, N5), (10, 10, M6)))).items():
     if k in H: H[k].update({"unp5": num(r[3], 4), "unp6": num(r[4], 4), "emg5": num(r[5], 4), "emg6": num(r[6], 4),
                             "unpm5": num(r[7], 1), "unpm6": num(r[8], 1), "emgm5": num(r[9], 1), "emgm6": num(r[10], 1)})
-for k, r in by_id(sheet("６_他院", None)).items():
+for k, r in by_id(msheet("６_他院", None, ranges((3, 3, N5), (4, 4, N6), (5, 5, N5), (6, 6, M6)))).items():
     if k in H: H[k].update({"ref5": num(r[3], 4), "ref6": num(r[4], 4), "refm5": num(r[5], 1), "refm6": num(r[6], 1)})
 
 # ---------- (7) 入院経路・退院先 / (8) 転帰 / (9) 再入院 ----------
@@ -148,22 +160,22 @@ DEST = ["家庭（当院通院）", "家庭（他院通院）", "家庭（その
 OUTC = ["治癒・軽快", "寛解", "不変", "増悪", "最資源傷病による死亡", "最資源傷病以外による死亡", "その他"]
 READM = ["再入院（計）", "同一疾患・4週以内", "同一疾患・4週超", "異なる疾患・4週以内", "異なる疾患・4週超"]
 def pair(r, start, n): return [[num(x, 4) for x in r[start:start + n]], [num(x, 4) for x in r[start + n:start + 2 * n]]]
-for k, r in by_id(sheet("７_入院経路", "入院経路")).items():
+for k, r in by_id(msheet("７_入院経路", "入院経路", ranges((3, 7, N5), (8, 12, N6)))).items():
     if k in H: H[k]["route"] = pair(r, 3, 5)
-for k, r in by_id(sheet("７_入院経路", "退院先")).items():
+for k, r in by_id(msheet("７_入院経路", "退院先", ranges((3, 12, N5), (13, 22, N6)))).items():
     if k in H: H[k]["dest"] = pair(r, 3, 10)
-for k, r in by_id(sheet("８_退院時転帰", None)).items():
+for k, r in by_id(msheet("８_退院時転帰", None, ranges((3, 9, N5), (10, 16, N6)))).items():
     if k in H: H[k]["outc"] = pair(r, 3, 7)
-for k, r in by_id(sheet("９_再入院の状況", "再入院の状況")).items():
+for k, r in by_id(msheet("９_再入院の状況", "再入院の状況", ranges((3, 7, N5), (8, 12, N6)))).items():
     if k in H: H[k]["readm"] = pair(r, 3, 5)
 
 # ---------- (11) 施設別MDC比率 ----------
-for k, r in by_id(sheet("１１_施設別MDC", "施設別MDC別比率")).items():
+for k, r in by_id(msheet("１１_施設別MDC", "施設別MDC別比率", ranges((3, 21, 22), (22, 22, "sum")))).items():
     if k in H:
         H[k]["mdc6"] = [num(x, 5) for x in r[3:21]]; H[k]["mdcn6"] = num(r[22])
 
 # ---------- (14) 手術・化学療法・放射線療法・全身麻酔 ----------
-for k, r in by_id(sheet("１４_手術化学", "高度医療")).items():
+for k, r in by_id(msheet("１４_手術化学", "高度医療", ranges((3, 9, "sum"), (10, 16, 3)))).items():
     if k in H:
         H[k]["adv"] = [num(x) for x in r[3:10]]  # 総数, 手術, 化学療法, 放射線療法, 救急車搬送, いずれか, 全身麻酔
 
@@ -174,21 +186,23 @@ for r in rows:
     k = nk(r[0])
     if re.fullmatch(r"\d{5}", k): cur = k
     if cur and nk(r[3]) in ("無し", "有り") and cur in H:
-        mdcd[cur]["surg_" + ("no" if nk(r[3]) == "無し" else "yes")] = [num(x) for x in r[4:22]]
+        key_ = "surg_" + ("no" if nk(r[3]) == "無し" else "yes"); v_ = [num(x) for x in r[4:22]]
+        prev_ = mdcd[cur].get(key_)  # 年度の途中で合併した病院は2つのブロックを合算
+        mdcd[cur][key_] = v_ if prev_ is None else [None if a_ is None and b_ is None else (a_ or 0) + (b_ or 0) for a_, b_ in zip(prev_, v_)]
     if not k and not nk(r[3]): cur = None if not nk(r[2]) else cur
 
 # ---------- 参考2 (2) MDC別 予定・救急医療入院 ----------
-for k, r in by_id(sheet("参考資料２__２_予定", None)).items():
+for k, r in by_id(msheet("参考資料２__２_予定", None, ranges((3, 200, "sum")))).items():
     if k in H:
         mdcd[k]["adm"] = [[num(x) for x in r[3 + 4 * i: 7 + 4 * i]] for i in range(18)]  # 予定, 化学療法再入院, 予定外, 救急医療入院
 
 # ---------- 参考2 (3) MDC別 救急車による搬送 ----------
-for k, r in by_id(sheet("参考資料２__３_救急車", None)).items():
+for k, r in by_id(msheet("参考資料２__３_救急車", None, ranges((3, 200, "sum")))).items():
     if k in H:
         mdcd[k]["amb"] = [[num(r[3 + 2 * i]), num(r[4 + 2 * i])] for i in range(18)]  # 救急車による搬送, 合計（搬送の10件未満は None）
 
 # ---------- 参考2 (4) 入院から24時間以内の死亡 ----------
-for k, r in by_id(sheet("参考資料２__４_入院から", None)).items():
+for k, r in by_id(msheet("参考資料２__４_入院から", None, ranges((3, 200, "sum")))).items():
     if k in H:
         d24 = [[num(r[3 + 2 * i]), num(r[4 + 2 * i])] for i in range(18)]
         mdcd[k]["d24"] = d24
@@ -196,11 +210,11 @@ for k, r in by_id(sheet("参考資料２__４_入院から", None)).items():
         H[k]["d24"] = [dead, tot]  # 秘匿（10件未満）分は 0 として合算
 
 # ---------- 参考3 (1) 再入院・再転棟 / (2) 後発医薬品 ----------
-for k, r in by_id(sheet("参考資料３__１_再入院", "令和6年度")).items():
+for k, r in by_id(msheet("参考資料３__１_再入院", "令和6年度", ranges((3, 30, N6)))).items():
     if k in H:
         H[k]["readm3"] = [num(r[3], 4), num(r[4], 5), num(r[9], 4), num(r[10], 4), num(r[11], 4), num(r[12], 4), num(r[13], 4), num(r[14], 4)]
         # 再入院率, 再転棟率, 同一病名(計画的, 計画的_化学療法以外, 計画外), 異なる病名(計画的, 計画的_化学療法以外, 計画外)
-for k, r in by_id(sheet("参考資料３__２_後発", None)).items():
+for k, r in by_id(msheet("参考資料３__２_後発", None, ranges((3, 3, N6)))).items():
     if k in H: H[k]["gen6"] = num(r[3], 4)
 
 # ---------- (17) 二次医療圏別 MDC別患者数（患者住所地ベース） ----------

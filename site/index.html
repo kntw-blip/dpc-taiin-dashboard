@@ -13,7 +13,13 @@
   <p class="lead">自院を選ぶと、同じ二次医療圏の病院、同じ法人の病院、または病床数・病床機能が近い類似病院と比較できます。</p>
 </header>
 
-<section class="filters" aria-label="表示条件">
+<section class="filters" id="filters" aria-label="表示条件">
+  <div class="f-mini" id="f-mini">
+    <button type="button" class="f-mini-btn" id="f-mini-open" aria-expanded="true" aria-controls="filters">
+      <span class="f-mini-text"><b id="f-mini-name"></b><span id="f-mini-cond"></span></span>
+      <span class="f-mini-act">条件を変更 ▾</span>
+    </button>
+  </div>
   <div class="f-item f-search">
     <label for="q">自院</label>
     <div class="combo">
@@ -56,6 +62,7 @@
     <div class="head-btns">
       <button type="button" id="help-open" class="primary-ghost" aria-haspopup="dialog" aria-controls="help">使い方</button>
       <button type="button" id="theme" class="ghost" aria-label="表示テーマの切り替え">表示：自動</button>
+      <button type="button" id="f-close" class="ghost f-close">条件を閉じる ▴</button>
     </div>
   </div>
 </section>
@@ -342,6 +349,7 @@
 <script src="vendor/echarts.min.js"></script>
 <script src="app.js"></script>
 <script src="trend.js"></script>
+<script src="filters.js"></script>
 <script src="help.js"></script>
 </body>
 </html>
