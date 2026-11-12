@@ -219,3 +219,6 @@ tr.self td { font-weight: 650; background: color-mix(in srgb, var(--self) 10%, t
 .qs-ex { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
 
 [hidden] { display: none !important; }
+.chk { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); align-self: flex-end; padding-bottom: 8px; }
+.chk input { accent-color: var(--self); width: 16px; height: 16px; }
+.tr-warn { color: var(--text-secondary); font-size: 13px; margin: 2px 0; }

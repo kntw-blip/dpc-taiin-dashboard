@@ -95,7 +95,7 @@
   <nav class="toc" aria-label="セクション">
     <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
     <a href="#s-emg">4 救急</a><a href="#s-link">5 地域連携</a><a href="#s-adv">6 手術・高度医療</a><a href="#s-qual">7 医療の質</a>
-    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-sev">10 重症度・リハビリ</a><a href="#s-table">比較表</a>
+    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-sev">10 重症度・リハビリ</a><a href="#s-trend">11 経年推移</a><a href="#s-table">比較表</a>
   </nav>
 
   <section id="s-summary" class="sec">
@@ -105,6 +105,7 @@
       <div class="card" data-chart="radar"><h3>比較対象の平均との比較 <span class="note">他院平均＝100</span></h3><div class="chart" id="c-radar"></div></div>
       <div class="card"><h3>比較対象内の順位</h3><div id="ranks" class="ranks"></div></div>
     </div>
+    <div class="card" data-chart="tr-spark"><h3>自院の推移 <span class="note">令和元年度〜令和6年度。詳しくは「11 経年推移」</span></h3><div class="chart" id="c-tr-spark"></div></div>
   </section>
 
   <section id="s-scale" class="sec">
@@ -282,6 +283,42 @@
     </div>
   </section>
 
+  <section id="s-trend" class="sec">
+    <h2>11 経年推移（令和元年度〜令和6年度）</h2>
+    <div class="method">
+      <p><b>集計期間：</b>令和元〜5年度は4月〜翌3月、令和6年度は6月〜翌5月です（令和6年度の調査から変更）。各年度の報告書の値を使っているため、令和5年度と令和6年度の間は期間が2か月ずれます。グラフの縦の点線（集計期間の変更）で区切っています。</p>
+      <p><b>病院のつなぎ方：</b>告示番号は年度ごとに付け直されるため、各年度の施設概要表の「通番」（前年度の告示番号）をたどって令和6年度の病院につないでいます。改称・移転・経営移譲があっても同じ病院として続きます。年度の途中で合併した病院は、合併前と合併後の値を合算しています（件数は合計、平均と率は件数で、1か月あたりの件数は提出月数で重み付け）。</p>
+      <p><b>比較対象：</b>令和6年度の顔ぶれで固定し、その病院の過去の値と比べています。その年度に調査に参加していなかった病院は、その年度の集計から外れます。</p>
+      <p><b>在院日数の指標・患者構成の指標：</b>各年度の全国平均と診断群分類を基準に計算された値です。年度をまたいで比べられるのは「その年度の全国平均に対する位置」です。</p>
+      <p><b>令和2〜3年度</b>は新型コロナウイルス感染症の影響で、多くの病院で患者数が減っています（グラフの網かけ）。</p>
+    </div>
+    <p id="tr-info" class="surg-info"></p>
+    <div class="card" data-chart="tr-multi"><h3>主要指標の推移 <span class="note">自院と、比較対象の他院の中央値・中央50%の範囲</span></h3><div class="chart xtall" id="c-tr-multi"></div></div>
+    <div class="card surg-pick">
+      <div class="pick-row">
+        <div class="f-item"><label for="tr-key">指標</label><select id="tr-key" class="sel"></select></div>
+        <div class="f-item"><label for="tr-base">起点の年度</label><select id="tr-base" class="sel"></select></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="tr-lines"><h3 id="tr-lines-title">選んだ指標の推移（比較対象の各病院）</h3><div class="chart tall" id="c-tr-lines"></div></div>
+      <div class="card" data-chart="tr-rank"><h3 id="tr-rank-title">自院の順位の推移</h3><div class="chart tall" id="c-tr-rank"></div></div>
+    </div>
+    <div class="card" data-chart="tr-growth"><h3 id="tr-growth-title">起点の年度から令和6年度への変化</h3><div class="chart tall" id="c-tr-growth"></div></div>
+    <h3 class="subhead">疾患（MDC）別の患者数とシェア</h3>
+    <div class="card surg-pick">
+      <div class="pick-row">
+        <div class="f-item"><label for="tr-mdc">MDC</label><select id="tr-mdc" class="sel"></select></div>
+        <label class="chk" id="tr-closed-wrap"><input type="checkbox" id="tr-closed" checked> 閉院・統合などで令和6年度にない病院も市場に含める（二次医療圏のみ）</label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="tr-mdc-bar"><h3 id="tr-mdc-bar-title">患者数の推移（比較対象全体の内訳）</h3><div class="chart tall" id="c-tr-mdc-bar"></div></div>
+      <div class="card" data-chart="tr-mdc-share"><h3 id="tr-mdc-share-title">シェアの推移（自院と上位5病院）</h3><div class="chart tall" id="c-tr-mdc-share"></div></div>
+    </div>
+    <div class="card" data-chart="tr-mdc-heat"><h3 id="tr-mdc-heat-title">自院のMDC別患者数の増減</h3><div class="chart xtall" id="c-tr-mdc-heat"></div></div>
+  </section>
+
   <section id="s-table" class="sec">
     <h2>比較表 <button type="button" id="dl" class="ghost small">CSVダウンロード</button></h2>
     <div class="tablewrap"><table id="cmp" class="cmp"></table></div>
@@ -291,8 +328,8 @@
 <footer class="foot">
   <h2>データと注意事項</h2>
   <ul>
-    <li>出典：厚生労働省「令和6年度DPC導入の影響評価に係る調査『退院患者調査』の結果報告」、厚生労働省「診断群分類（DPC）電子点数表」（令和6年度）、地方厚生局「コード内容別医療機関一覧表」（令和8年10月1日時点）、国土交通省「国土数値情報（医療圏データ）」。これらを加工して作成しています。</li>
-    <li>集計対象は令和6年6月〜令和7年5月に退院（転棟）した患者です。在院日数1日以下、24時間以内の死亡などは分析対象外です。</li>
+    <li>出典：厚生労働省「令和6年度DPC導入の影響評価に係る調査『退院患者調査』の結果報告」（経年推移は令和元年度〜令和5年度の同調査の結果報告も使用）、厚生労働省「診断群分類（DPC）電子点数表」（令和6年度）、地方厚生局「コード内容別医療機関一覧表」（令和8年10月1日時点）、国土交通省「国土数値情報（医療圏データ）」。これらを加工して作成しています。</li>
+    <li>集計対象は令和6年6月〜令和7年5月に退院（転棟）した患者です（「11 経年推移」の令和元〜5年度は各年度の4月〜翌3月）。在院日数1日以下、24時間以内の死亡などは分析対象外です。</li>
     <li>10件未満の値は公表データで秘匿されているため、空欄（–）で表示しています。</li>
     <li>二次医療圏は第8次医療計画の330圏です。病院は所在地の市区町村で割り当てています。</li>
     <li><strong>法人（開設者）は令和8年10月時点</strong>の地方厚生局の一覧表から、施設名・所在地・病床数で照合しました。診療実績（令和6年度）とは時点が異なり、その間の統合・譲渡は反映されていません。照合できなかった施設は「法人不明」です（<a href="data/owner_review.csv">照合できなかった施設の一覧</a>）。法人は法人格の単位で、同名の別法人は代表者名で区別しています。</li>
@@ -304,6 +341,7 @@
 </div>
 <script src="vendor/echarts.min.js"></script>
 <script src="app.js"></script>
+<script src="trend.js"></script>
 <script src="help.js"></script>
 </body>
 </html>
