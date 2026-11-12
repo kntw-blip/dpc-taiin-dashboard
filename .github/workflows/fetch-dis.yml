@@ -1,0 +1,35 @@
+name: fetch-dis
+# 疾患別（DPC6桁）の集計表（令和元年度〜令和6年度）を取得し、raw-dis ブランチへ保存する
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [scripts/fetch_dis.py, .github/workflows/fetch-dis.yml]
+permissions:
+  contents: write
+concurrency:
+  group: fetch-dis
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests beautifulsoup4 python-calamine
+      - name: Fetch
+        run: python scripts/fetch_dis.py dis 2>&1 | tee fetch_log.txt
+      - name: Check size and push to raw-dis branch
+        run: |
+          find dis -type f -size +95M -print -delete | sed 's/^/REMOVED_TOO_LARGE /' | tee -a fetch_log.txt
+          cp fetch_log.txt dis/
+          find dis -type f -printf "%s %p\n" | sort -k2 > dis/files.txt
+          echo "::notice title=files::$(du -sh dis | cut -f1) / $(wc -l < dis/files.txt) files%0A$(grep -E 'FAILED|REMOVED|files,' fetch_log.txt | tail -c 2000 | sed ':a;N;$!ba;s/\n/%0A/g')"
+          cd dis
+          git init -q -b raw-dis
+          git config user.name "github-actions[bot]"
+          git config user.email "41898299+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "disease-level data $(date -u +%FT%TZ)"
+          git -c http.postBuffer=524288000 push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" raw-dis 2> push_err.txt || { echo "::error title=push::$(tail -c 2000 push_err.txt | sed ':a;N;$!ba;s/\n/%0A/g')"; exit 1; }
