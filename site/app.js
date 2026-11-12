@@ -32,8 +32,8 @@ const M = {
   kinds6: { label: "出現した診断群分類の数", unit: "分類", fmt: F.int, get: (h) => h.kinds6 },
   perBed: { label: "病床あたり退院患者数", unit: "件/床・年", fmt: F.d1, get: (h) => h.perBed },
   b_total: { label: "病床数（医療保険）", unit: "床", fmt: F.int, get: (h) => h.b_total },
-  ambm6: { label: "救急車搬送（月）", unit: "件/月", fmt: F.d1, get: (h) => h.ambm6, prev: (h) => h.ambm5 },
-  amb6: { label: "救急車搬送率", unit: "", fmt: F.pct, get: (h) => h.amb6, prev: (h) => h.amb5 },
+  ambm6: { label: "救急搬送入院件数（月）", unit: "件/月", fmt: F.d1, get: (h) => h.ambm6, prev: (h) => h.ambm5 },
+  amb6: { label: "救急搬送入院率", unit: "", fmt: F.pct, get: (h) => h.amb6, prev: (h) => h.amb5 },
   emgm6: { label: "救急医療入院（月）", unit: "件/月", fmt: F.d1, get: (h) => h.emgm6, prev: (h) => h.emgm5 },
   emg6: { label: "救急医療入院率", unit: "", fmt: F.pct, get: (h) => h.emg6, prev: (h) => h.emg5 },
   ref6: { label: "他院からの紹介率", unit: "", fmt: F.pct, get: (h) => h.ref6, prev: (h) => h.ref5 },
@@ -171,12 +171,13 @@ function chart(id) {
 }
 function base() {
   const t = { color: css("--text-secondary"), fontSize: 11 };
+  const tl = { ...t, hideOverlap: true };   // 狭い画面で目盛りが重なったら間引く
   return {
     textStyle: { fontFamily: getComputedStyle(vizRoot).fontFamily, color: css("--text-primary") },
     animationDuration: 300,
     tooltip: { confine: true, backgroundColor: css("--surface-1"), borderColor: css("--border"), borderWidth: 1,
                textStyle: { color: css("--text-primary"), fontSize: 12 }, extraCssText: "box-shadow:0 6px 20px rgba(0,0,0,.14);border-radius:8px;" },
-    axisCommon: { axisLine: { lineStyle: { color: css("--axis") } }, axisTick: { show: false }, axisLabel: t,
+    axisCommon: { axisLine: { lineStyle: { color: css("--axis") } }, axisTick: { show: false }, axisLabel: tl,
                   splitLine: { lineStyle: { color: css("--grid"), width: 1 } }, nameTextStyle: t },
   };
 }
@@ -226,7 +227,7 @@ function rankChart(id, mk, opt = {}) {
   const pos = list.indexOf(self);
   let show = list.slice(0, top);
   if (pos >= top) show = show.concat([self]);
-  const el = document.getElementById(id);
+  const el = document.getElementById(id), narrow = el.clientWidth < 560;
   el.style.height = Math.max(240, show.length * 24 + 70) + "px";
   const avg = mean(S.others, m.get);
   const c = chart(id); c.resize();
@@ -236,9 +237,9 @@ function rankChart(id, mk, opt = {}) {
     tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => {
       const h = S.byId.get(p.data.hid), r = list.indexOf(h) + 1;
       return `<div style="margin-bottom:2px">${esc(h.name)}</div>` + tipRow(m.fmt(p.value) + (m.unit ? " " + m.unit : ""), `${r}位 / ${list.length}施設`) + (opt.extra ? opt.extra(h) : ""); } },
-    xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: m.axisFmt || ((v) => (m.fmt === F.pct ? Math.round(v * 100) + "%" : v.toLocaleString("ja-JP"))) } }),
+    xAxis: ax(b, { type: "value", splitNumber: narrow ? 2 : 5, axisLabel: { ...b.axisCommon.axisLabel, formatter: m.axisFmt || ((v) => (m.fmt === F.pct ? Math.round(v * 100) + "%" : v.toLocaleString("ja-JP"))) } }),
     yAxis: ax(b, { type: "category", inverse: true, data: show.map((h, i) => (h === self && pos >= top ? `${pos + 1}位 ` : `${list.indexOf(h) + 1}位 `) + h.short),
-      axisLabel: { ...b.axisCommon.axisLabel, width: 190, overflow: "truncate",
+      axisLabel: { ...b.axisCommon.axisLabel, width: narrow ? 130 : 190, overflow: "truncate",
         formatter: (v, i) => (show[i] === self ? `{s|${v}}` : v), rich: { s: { color: css("--text-primary"), fontWeight: 700, fontSize: 11 } } },
       splitLine: { show: false } }),
     series: [{ type: "bar", data: items, barMaxWidth: 16, barCategoryGap: "30%",
@@ -673,7 +674,7 @@ function renderAdmPick() {
     .concat(others.map(([h, c]) => ({ name: h.short, full: h.name, c }))));
 }
 
-/* ---------- 4'' 救急車による搬送のMDC別分析 ---------- */
+/* ---------- 4'' 救急搬送入院のMDC別分析 ---------- */
 /* 戻り値: {n: 搬送件数（秘匿は null）, t: 合計}。mi="all" は公表されているMDCだけの合計 */
 function ambCell(h, mi) {
   const d = S.mdc && S.mdc[h.id]; if (!d || !d.amb) return null;
@@ -704,8 +705,8 @@ function renderAmbM() {
       { name: "比較対象全体", type: "bar", data: rg.map((x) => x ?? 0), barMaxWidth: 8, itemStyle: { color: css("--other-strong"), borderRadius: [0, 4, 4, 0] } },
     ],
   }, true);
-  setNote("c-ambm-rate", "括弧内は自院の救急車搬送の件数。「10件未満」は秘匿のため率を表示していません。");
-  setTable("c-ambm-rate", ["MDC", "自院の搬送件数", "自院の合計", "自院の搬送率", "比較対象全体の搬送件数", "比較対象全体の合計", "比較対象全体の搬送率"],
+  setNote("c-ambm-rate", "括弧内は自院の救急搬送入院件数。「10件未満」は秘匿のため率を表示していません。");
+  setTable("c-ambm-rate", ["MDC", "自院の救急搬送入院件数", "自院の合計", "自院の救急搬送入院率", "比較対象全体の救急搬送入院件数", "比較対象全体の合計", "比較対象全体の救急搬送入院率"],
     MDCS.map((m, i) => ({ cells: [m, ambLabel(mine[i]), mine[i] ? F.int(mine[i].t) : "–", F.pct(rs[i]), F.int(grp[i].n), F.int(grp[i].t), F.pct(rg[i])] })));
   // B シェア（順位つき）
   const share = mine.map((c, i) => (c && c.n != null && grp[i].n ? c.n / grp[i].n : null));
@@ -714,7 +715,7 @@ function renderAmbM() {
   chart("c-ambm-share").setOption({
     ...b, grid: { left: 8, right: 110, top: 10, bottom: 24, containLabel: true },
     tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => { const i = p.dataIndex; return `<div style="margin-bottom:2px">${esc(MDCS[i])}</div>` +
-      tipRow(F.pct(share[i]), "比較対象内のシェア") + tipRow(ambLabel(mine[i]), "自院の救急車搬送") + tipRow(F.int(grp[i].n) + "件", "比較対象の合計（公表分）") + (rk[i] ? tipRow(`${rk[i].r}位 / ${rk[i].n}`, "順位") : ""); } },
+      tipRow(F.pct(share[i]), "比較対象内のシェア") + tipRow(ambLabel(mine[i]), "自院の救急搬送入院") + tipRow(F.int(grp[i].n) + "件", "比較対象の合計（公表分）") + (rk[i] ? tipRow(`${rk[i].r}位 / ${rk[i].n}`, "順位") : ""); } },
     xAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => Math.round(v * 100) + "%" } }),
     yAxis: ax(b, { type: "category", inverse: true, data: MDCS, splitLine: { show: false } }),
     series: [{ type: "bar", data: share.map((v) => v ?? 0), barMaxWidth: 14, itemStyle: { color: css("--self"), borderRadius: [0, 4, 4, 0] },
@@ -722,7 +723,7 @@ function renderAmbM() {
         formatter: (p) => { const i = p.dataIndex; return share[i] == null ? (mine[i] && mine[i].n == null ? "10件未満" : "–") : `${F.pct(share[i])}（${rk[i].r}位/${rk[i].n}）`; } } }],
   }, true);
   setNote("c-ambm-share", "括弧内は比較対象内の順位。");
-  setTable("c-ambm-share", ["MDC", "自院の搬送件数", "比較対象の合計（公表分）", "シェア", "順位"],
+  setTable("c-ambm-share", ["MDC", "自院の救急搬送入院件数", "比較対象の合計（公表分）", "シェア", "順位"],
     MDCS.map((m, i) => ({ cells: [m, ambLabel(mine[i]), F.int(grp[i].n), F.pct(share[i]), rk[i] ? `${rk[i].r} / ${rk[i].n}` : "–"] })));
   // C 疾患構成
   const sN = mine.map((c) => (c && c.n != null ? c.n : 0)), sT = sum(sN), gT = sum(grp.map((g) => g.n));
@@ -739,8 +740,8 @@ function renderAmbM() {
       { name: "比較対象全体", type: "bar", data: mixG, barMaxWidth: 14, itemStyle: { color: css("--other-strong"), borderRadius: [4, 4, 0, 0] } },
     ],
   }, true);
-  setNote("c-ambm-mix", `横軸はMDC番号（01 神経系 … 18 その他、名称は表で確認できます）。自院の救急車搬送 ${F.int(sT)}件・比較対象全体 ${F.int(gT)}件（いずれも公表分）。`);
-  setTable("c-ambm-mix", ["MDC", "自院の搬送件数", "自院の構成比", "比較対象全体の搬送件数", "比較対象全体の構成比"],
+  setNote("c-ambm-mix", `横軸はMDC番号（01 神経系 … 18 その他、名称は表で確認できます）。自院の救急搬送入院 ${F.int(sT)}件・比較対象全体 ${F.int(gT)}件（いずれも公表分）。`);
+  setTable("c-ambm-mix", ["MDC", "自院の救急搬送入院件数", "自院の構成比", "比較対象全体の救急搬送入院件数", "比較対象全体の構成比"],
     MDCS.map((m, i) => ({ cells: [m, ambLabel(mine[i]), F.pct(mixS[i]), F.int(grp[i].n), F.pct(mixG[i])] })));
   renderAmbPick();
 }
@@ -752,16 +753,16 @@ function initAmbPick() {
 }
 function renderAmbPick() {
   const mv = $("#ambm-mdc").value, mi = mv === "all" ? "all" : +mv, nm = mi === "all" ? "全MDC" : MDCS[mi];
-  $("#ambm-rank-title").textContent = `救急車搬送の件数（${nm}）`;
-  $("#ambm-sc-title").textContent = `合計件数と救急車搬送率（${nm}）`;
-  const mN = { label: "救急車搬送の件数", unit: "件", fmt: F.int, get: (h) => { const c = ambCell(h, mi); return c && c.n != null ? c.n : null; } };
+  $("#ambm-rank-title").textContent = `救急搬送入院件数（${nm}）`;
+  $("#ambm-sc-title").textContent = `合計件数と救急搬送入院率（${nm}）`;
+  const mN = { label: "救急搬送入院件数", unit: "件", fmt: F.int, get: (h) => { const c = ambCell(h, mi); return c && c.n != null ? c.n : null; } };
   rankChart("c-ambm-rank", mN, { extra: (h) => { const c = ambCell(h, mi); return c ? tipRow(F.int(c.t) + "件", "合計") + (mi === "all" && c.hidden ? tipRow(`${c.hidden}MDC`, "10件未満で除外") : "") : ""; } });
   const mT = { label: "合計件数", unit: "件", fmt: F.int, get: (h) => { const c = ambCell(h, mi); return c && c.n != null ? c.t : null; } };
-  const mR = { label: "救急車搬送率", unit: "", fmt: F.pct, get: (h) => { const c = ambCell(h, mi); return c && c.n != null && c.t ? c.n / c.t : null; } };
+  const mR = { label: "救急搬送入院率", unit: "", fmt: F.pct, get: (h) => { const c = ambCell(h, mi); return c && c.n != null && c.t ? c.n / c.t : null; } };
   const g = ambGroup(mi, S.G);
   scatter("c-ambm-sc", mT, mR, { refY: g.t ? g.n / g.t : null, refYLabel: `比較対象全体 ${F.pct(g.t ? g.n / g.t : null)}` });
   const me = ambCell(S.self, mi);
-  setNote("c-ambm-sc", (me && me.n == null ? "自院はこのMDCの搬送件数が10件未満のため表示されません。" : "") + "横線は比較対象全体の救急車搬送率。搬送件数が10件未満の病院は表示されません。");
+  setNote("c-ambm-sc", (me && me.n == null ? "自院はこのMDCの救急搬送入院件数が10件未満のため表示されません。" : "") + "横線は比較対象全体の救急搬送入院率。搬送件数が10件未満の病院は表示されません。");
 }
 
 /* ---------- 5 地域連携 ---------- */
@@ -1022,7 +1023,7 @@ function propBars(cols, V, groupVal, self) {
 /* ---------- 比較表 ---------- */
 const TCOLS = [["病院", (h) => h.name, "t"], ["種別", (h) => h.type, "t"], ["法人", (h) => h.corp || "法人不明", "t"], ["病床", (h) => h.b_total, F.int],
   ["退院患者数", M.n6.get, F.int], ["前年度", M.n6.prev, F.int], ["平均在院日数", M.los6.get, F.d1], ["在院日数の指標", M.eff6.get, F.d2], ["患者構成の指標", M.cmi6.get, F.d2],
-  ["救急車（月）", M.ambm6.get, F.d1], ["救急医療入院（月）", M.emgm6.get, F.d1], ["紹介率", M.ref6.get, F.pct], ["手術件数", M.surgN.get, F.int], ["手術率", M.surgR.get, F.pct],
+  ["救急搬送入院（月）", M.ambm6.get, F.d1], ["救急医療入院（月）", M.emgm6.get, F.d1], ["紹介率", M.ref6.get, F.pct], ["手術件数", M.surgN.get, F.int], ["手術率", M.surgR.get, F.pct],
   ["全身麻酔件数", M.gaN.get, F.int], ["化学療法件数", M.chemoN.get, F.int], ["放射線療法件数", M.radN.get, F.int], ["家庭への退院率", M.home6.get, F.pct],
   ["死亡退院率", M.death6.get, F.pct], ["計画外再入院率", M.readmU.get, F.pct], ["24時間以内死亡※", (h) => (h.d24 ? h.d24[0] : null), F.int], ["後発医薬品", M.gen6.get, F.pct]];
 let sortState = { col: 4, dir: -1 };
