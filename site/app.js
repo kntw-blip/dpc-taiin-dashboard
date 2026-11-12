@@ -1074,6 +1074,7 @@ function renderAll() {
   if (S.surg) renderSurg();
   if (S.sev) renderSev();
   if (typeof renderTrend === "function") renderTrend();
+  if (typeof renderDis === "function") renderDis();
   if (window.DPCFilters) window.DPCFilters.update();
   refreshOpenTables();
   const u = new URL(location.href); u.searchParams.set("h", h.id); u.searchParams.set("axis", S.axis); u.searchParams.set("scope", S.scope);

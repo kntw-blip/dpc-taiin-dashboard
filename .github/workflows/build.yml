@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths: [site/**, scripts/**, data/**, .github/workflows/build.yml]
   workflow_run:
-    workflows: [fetch-raw, fetch-hist]
+    workflows: [fetch-raw, fetch-hist, fetch-dis]
     types: [completed]
 permissions:
   contents: write
@@ -24,6 +24,8 @@ jobs:
         with: { ref: raw, path: raw }
       - uses: actions/checkout@v4
         with: { ref: raw-hist, path: rawhist }
+      - uses: actions/checkout@v4
+        with: { ref: raw-dis, path: rawdis }
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
       - run: pip install python-calamine dbfread
@@ -36,6 +38,7 @@ jobs:
           python scripts/build_surg.py raw site/data 2>&1 | tee -a build_log.txt
           python scripts/build_sev.py raw site/data 2>&1 | tee -a build_log.txt
           python scripts/build_hist.py raw rawhist site/data 2>&1 | tee -a build_log.txt
+          python scripts/build_dis.py raw rawhist rawdis site/data 2>&1 | tee -a build_log.txt
           echo "::notice title=build::$(tail -c 2500 build_log.txt | sed ':a;N;$!ba;s/\n/%0A/g')"
       - name: Publish to gh-pages
         run: |

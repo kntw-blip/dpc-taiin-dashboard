@@ -102,7 +102,7 @@
   <nav class="toc" aria-label="セクション">
     <a href="#s-summary">サマリー</a><a href="#s-scale">1 規模</a><a href="#s-mdc">2 疾患構成・シェア</a><a href="#s-eff">3 効率性・複雑性</a>
     <a href="#s-emg">4 救急</a><a href="#s-link">5 地域連携</a><a href="#s-adv">6 手術・高度医療</a><a href="#s-qual">7 医療の質</a>
-    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-sev">10 重症度・リハビリ</a><a href="#s-trend">11 経年推移</a><a href="#s-table">比較表</a>
+    <a href="#s-drug">8 薬剤</a><a href="#s-surg">9 手術別の実績</a><a href="#s-sev">10 重症度・リハビリ</a><a href="#s-trend">11 経年推移</a><a href="#s-dis">12 疾患別の推移</a><a href="#s-table">比較表</a>
   </nav>
 
   <section id="s-summary" class="sec">
@@ -326,6 +326,32 @@
     <div class="card" data-chart="tr-mdc-heat"><h3 id="tr-mdc-heat-title">自院のMDC別患者数の増減</h3><div class="chart xtall" id="c-tr-mdc-heat"></div></div>
   </section>
 
+  <section id="s-dis" class="sec">
+    <h2>12 疾患別の推移（令和元年度〜令和6年度）</h2>
+    <div class="method">
+      <p><b>疾患：</b>診断群分類の上6桁（例：050130 心不全）。厚生労働省の「疾患別手術有無別処置1有無別集計」にある疾患はこの表を、ない疾患は「疾患別手術別集計」を使っています。</p>
+      <p><b>手術あり：</b>輸血関連の手技（K920 輸血・K920-2 輸血管理料・K923 術中術後自己血回収術）だけの患者は「手術なし」に数えます（厚生労働省の手術有無別の集計と同じ定義）。</p>
+      <p><b>推計（＊）：</b>病院別の値は10件未満が非公表です。非公表のセルは、全国の施設類型別（DPC参加・準備・出来高算定）の合計から公表セルの合計を引いた残りを、同じ類型の非公表セルの数で割った値（0〜9件）で推計しています。推計を含む値には「＊」や「約」を付け、非公表を0件・9件とした場合の幅もあわせて示します。全病院の推計値を足すと全国の合計と一致します。</p>
+      <p><b>平均在院日数：</b>公表されているセルだけの加重平均です（非公表のセルの在院日数は不明）。</p>
+      <p><b>その他：</b>集計期間（令和6年度は6月〜翌5月）、病院のつなぎ方、比較対象の顔ぶれ、閉院等の病院の扱いは「11 経年推移」と同じです。診療報酬改定（令和2・4・6年度）で疾患の区分が変わり、年度が途切れる疾患があります。</p>
+    </div>
+    <div class="card surg-pick">
+      <div class="pick-row">
+        <div class="f-item f-search"><label for="dq">疾患（コードまたは名称で検索）</label>
+          <input id="dq" class="sel" list="dq-list" placeholder="例：050130 心不全" autocomplete="off"><datalist id="dq-list"></datalist></div>
+      </div>
+      <p id="dis-info" class="surg-info"></p>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="dis-self"><h3 id="dis-self-title">自院の件数（手術あり／なし）</h3><div class="chart tall" id="c-dis-self"></div></div>
+      <div class="card" data-chart="dis-rate"><h3 id="dis-rate-title">手術ありの割合</h3><div class="chart tall" id="c-dis-rate"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card" data-chart="dis-grp"><h3 id="dis-grp-title">比較対象全体の件数と自院のシェア</h3><div class="chart tall" id="c-dis-grp"></div></div>
+      <div class="card" data-chart="dis-los"><h3 id="dis-los-title">平均在院日数（手術あり／なし）</h3><div class="chart tall" id="c-dis-los"></div></div>
+    </div>
+  </section>
+
   <section id="s-table" class="sec">
     <h2>比較表 <button type="button" id="dl" class="ghost small">CSVダウンロード</button></h2>
     <div class="tablewrap"><table id="cmp" class="cmp"></table></div>
@@ -349,6 +375,7 @@
 <script src="vendor/echarts.min.js"></script>
 <script src="app.js"></script>
 <script src="trend.js"></script>
+<script src="dis.js"></script>
 <script src="filters.js"></script>
 <script src="help.js"></script>
 </body>
