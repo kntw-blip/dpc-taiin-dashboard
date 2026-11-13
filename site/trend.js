@@ -64,6 +64,8 @@ const xYears = (b, extra = {}, short = false) => ax(b, Object.assign({ type: "va
   axisPointer: { snap: true } }, extra));
 const xy = (arr) => arr.map((v, i) => [i, v]);
 const R6LAB = ["令和元年度", "令和2年度", "令和3年度", "令和4年度", "令和5年度", "令和6年度\n（6月〜翌5月）"];
+/* カテゴリ軸の年度ラベル（狭い画面では短く。間引かれないように） */
+const yearCats = () => (window.innerWidth < 560 ? ["R元", "R2", "R3", "R4", "R5", "R6\n(6〜5月)"] : R6LAB);
 /* 区切り線（集計期間の変更）と網かけ（新型コロナ） */
 function guides(withCovid, label, pos = "end") {
   const g = { markLine: { silent: true, symbol: "none", lineStyle: { color: css("--text-muted"), type: [4, 3], width: 1 },
@@ -239,7 +241,7 @@ function renderTrendMdc() {
       return `<div style="margin-bottom:2px">${TYL[y]}・${esc(mlab)}</div>` + ps.map((p) => tipRow(F.int(p.value) + "件", p.seriesName)).join("") +
         tipRow(F.int(tot[y]) + "件", "合計") + tipRow(tot[y] ? F.pct(sv[y] / tot[y]) : "–", "自院のシェア") +
         (cb && cb.names[y] && cb.names[y].length ? `<div style="color:${css("--text-muted")};font-size:11px;max-width:320px;white-space:normal">令和6年度にない病院：${esc(cb.names[y].slice(0, 6).join("、"))}${cb.names[y].length > 6 ? ` ほか${cb.names[y].length - 6}施設` : ""}</div>` : ""); } },
-    xAxis: ax(b, { type: "category", data: R6LAB, splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
+    xAxis: ax(b, { type: "category", data: yearCats(), splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
     yAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => v.toLocaleString("ja-JP") } }),
     series: ser.map((s, i) => ({ name: s.name, type: "bar", stack: "t", data: s.data, barMaxWidth: 46, itemStyle: { color: s.color, borderColor: css("--surface-1"), borderWidth: 1,
       borderRadius: i === ser.length - 1 ? [4, 4, 0, 0] : 0 },
@@ -279,7 +281,7 @@ function renderTrendMdc() {
     ...b, grid: { left: 12, right: 20, top: 10, bottom: 70, containLabel: true },
     tooltip: { ...b.tooltip, trigger: "item", formatter: (p) => { const [y, r, ix, v, bv] = p.data;
       return `<div style="margin-bottom:2px">${esc(rowsL[r])}・${TYL[y]}</div>` + tipRow(F.int(v) + "件", "自院の件数") + tipRow(F.int(bv) + "件", TYL[bY]) + tipRow(ix == null ? "–（起点が30件未満）" : String(ix), `指数（${TYL[bY]}＝100）`); } },
-    xAxis: ax(b, { type: "category", data: R6LAB, splitLine: { show: false }, axisLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
+    xAxis: ax(b, { type: "category", data: yearCats(), splitLine: { show: false }, axisLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
     yAxis: ax(b, { type: "category", data: rowsL, inverse: true, splitLine: { show: false }, axisLine: { show: false },
       axisLabel: { ...b.axisCommon.axisLabel, formatter: (v, i) => (i === 0 ? `{s|${v}}` : v), rich: { s: { fontWeight: 700, color: css("--text-primary"), fontSize: 11 } } } }),
     visualMap: { type: "continuous", min: 50, max: 150, dimension: 2, calculable: false, orient: "horizontal", left: "center", bottom: 8, itemHeight: 220, itemWidth: 10,

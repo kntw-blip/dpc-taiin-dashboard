@@ -59,6 +59,33 @@ function disClosed() {
   return DIS.data.closed[S.self.area][S.scope === "all" ? "a" : "d"] || null;
 }
 
+/* 手術あり／なしの積み上げ棒（rows[y] = [なし推計, 最小, 最大, あり推計, 最小, 最大, …]） */
+function surgStack(id, rows, nm, cA, cN, b, who) {
+  const sA = rows.map((r) => (r ? r[A_EST] : null)), sN = rows.map((r) => (r ? r[N_EST] : null));
+  chart(id).setOption({
+    ...b, grid: { left: 12, right: 16, top: 52, bottom: 30, containLabel: true },
+    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 10, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
+    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } }, formatter: (ps) => {
+      const y = ps[0].dataIndex, r = rows[y]; if (!r) return `${TYL[y]}<br>値なし`;
+      const tot = r[N_EST] + r[A_EST], ex = exact(r);
+      return `<div style="margin-bottom:2px">${TYL[y]}・${esc(nm)}・${esc(who)}${ex ? "" : "（推計を含む）"}</div>` +
+        tipRow(`${ex ? "" : "約"}${est(r[A_EST])}件` + (r[A_LO] !== r[A_HI] ? `（${est(r[A_LO])}〜${est(r[A_HI])}）` : ""), "手術あり") +
+        tipRow(`${ex ? "" : "約"}${est(r[N_EST])}件` + (r[N_LO] !== r[N_HI] ? `（${est(r[N_LO])}〜${est(r[N_HI])}）` : ""), "手術なし") +
+        tipRow(tot ? F.pct(r[A_EST] / tot) : "–", "手術ありの割合"); } },
+    xAxis: ax(b, { type: "category", data: yearCats(), splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0, hideOverlap: false } }),
+    yAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => v.toLocaleString("ja-JP") } }),
+    series: [
+      { name: "手術なし", type: "bar", stack: "s", data: sN, barMaxWidth: 46, itemStyle: { color: cN, borderColor: css("--surface-1"), borderWidth: 1 } },
+      { name: "手術あり", type: "bar", stack: "s", data: sA, barMaxWidth: 46, itemStyle: { color: cA, borderColor: css("--surface-1"), borderWidth: 1, borderRadius: [4, 4, 0, 0] },
+        label: { show: true, position: "top", color: css("--text-primary"), fontSize: 11,
+          formatter: (p) => { const r = rows[p.dataIndex]; if (!r) return ""; const t = r[N_EST] + r[A_EST]; return t ? `${F.pct(r[A_EST] / t)}${exact(r) ? "" : "＊"}` : ""; } } },
+    ],
+  }, true);
+  setTable(id, ["年度", "手術あり", "手術なし", "合計", "手術ありの割合", "推計"], TY.map((_, y) => { const r = rows[y];
+    return { cells: r ? [TYL[y], `${est(r[A_EST])}（${est(r[A_LO])}〜${est(r[A_HI])}）`, `${est(r[N_EST])}（${est(r[N_LO])}〜${est(r[N_HI])}）`, est(r[A_EST] + r[N_EST]),
+      r[A_EST] + r[N_EST] ? F.pct(r[A_EST] / (r[A_EST] + r[N_EST])) : "–", exact(r) ? "" : "推計を含む"] : [TYL[y], "–", "–", "–", "–", ""] }; }));
+}
+
 function renderDis() {
   if (!S.self || !DIS.idx) return;
   const info = document.getElementById("dis-info");
@@ -77,37 +104,19 @@ function renderDis() {
   parts.push(nAny ? `自院の値は${nAny}年度分のうち${nEx}年度が公表値だけで確定、${nAny - nEx}年度が推計を含みます。` : "自院はこの疾患の値がありません。");
   info.innerHTML = parts.join("");
 
-  // A 自院の件数（手術あり／なし）
-  document.getElementById("dis-self-title").textContent = `自院の件数：${nm}（手術あり／なし）`;
-  const sA = selfRows.map((r) => (r ? r[A_EST] : null)), sN = selfRows.map((r) => (r ? r[N_EST] : null));
+  // A 自院の件数（手術あり／なし）／A' 比較対象全体の件数（同じ形）
   const cA = css("--s2"), cN = css("--s3");
-  chart("c-dis-self").setOption({
-    ...b, grid: { left: 12, right: 16, top: 52, bottom: 30, containLabel: true },
-    legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 10, textStyle: { color: css("--text-secondary"), fontSize: 11 } },
-    tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } }, formatter: (ps) => {
-      const y = ps[0].dataIndex, r = selfRows[y]; if (!r) return `${TYL[y]}<br>値なし`;
-      const tot = r[N_EST] + r[A_EST];
-      return `<div style="margin-bottom:2px">${TYL[y]}・${esc(nm)}${exact(r) ? "" : "（推計を含む）"}</div>` +
-        tipRow(`${exact(r) ? "" : "約"}${est(r[A_EST])}件` + (r[A_LO] !== r[A_HI] ? `（${est(r[A_LO])}〜${est(r[A_HI])}）` : ""), "手術あり") +
-        tipRow(`${exact(r) ? "" : "約"}${est(r[N_EST])}件` + (r[N_LO] !== r[N_HI] ? `（${est(r[N_LO])}〜${est(r[N_HI])}）` : ""), "手術なし") +
-        tipRow(tot ? F.pct(r[A_EST] / tot) : "–", "手術ありの割合"); } },
-    xAxis: ax(b, { type: "category", data: R6LAB, splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
-    yAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => v.toLocaleString("ja-JP") } }),
-    series: [
-      { name: "手術なし", type: "bar", stack: "s", data: sN, barMaxWidth: 46, itemStyle: { color: cN, borderColor: css("--surface-1"), borderWidth: 1 } },
-      { name: "手術あり", type: "bar", stack: "s", data: sA, barMaxWidth: 46, itemStyle: { color: cA, borderColor: css("--surface-1"), borderWidth: 1, borderRadius: [4, 4, 0, 0] },
-        label: { show: true, position: "top", color: css("--text-primary"), fontSize: 11,
-          formatter: (p) => { const r = selfRows[p.dataIndex]; if (!r) return ""; const t = r[N_EST] + r[A_EST]; return t ? `${F.pct(r[A_EST] / t)}${exact(r) ? "" : "＊"}` : ""; } } },
-    ],
-  }, true);
+  document.getElementById("dis-self-title").textContent = `自院の件数：${nm}（手術あり／なし）`;
+  surgStack("c-dis-self", selfRows, nm, cA, cN, b, "自院");
   setNote("c-dis-self", "棒の上の数字は手術ありの割合。「＊」は10件未満の非公表セルの推計を含む年度です（幅はマウスを重ねると表示）。");
-  setTable("c-dis-self", ["年度", "手術あり", "手術なし", "合計", "手術ありの割合", "推計"], TY.map((_, y) => { const r = selfRows[y];
-    return { cells: r ? [TYL[y], `${est(r[A_EST])}（${est(r[A_LO])}〜${est(r[A_HI])}）`, `${est(r[N_EST])}（${est(r[N_LO])}〜${est(r[N_HI])}）`, est(r[A_EST] + r[N_EST]),
-      r[A_EST] + r[N_EST] ? F.pct(r[A_EST] / (r[A_EST] + r[N_EST])) : "–", exact(r) ? "" : "推計を含む"] : [TYL[y], "–", "–", "–", "–", ""] }; }));
-
-  // B 手術ありの割合（自院と比較対象全体、幅つき）
   const cb = disClosed();
   const G = TY.map((_, y) => (has[y] ? groupSum(S.G, y, cb) : null));
+  const gRows = G.map((g) => (g && g.cnt ? [g.n, g.nL, g.nH, g.a, g.aL, g.aH, null, null] : null));
+  document.getElementById("dis-gsurg-title").textContent = `${groupLabel()}全体の件数：${nm}（手術あり／なし）`;
+  surgStack("c-dis-gsurg", gRows, nm, cA, cN, b, "比較対象全体");
+  setNote("c-dis-gsurg", `自院を含む比較対象${S.G.length}施設${cb ? "と、令和6年度までに閉院・統合などでなくなった医療圏内の病院" : ""}の合計。棒の上の数字は手術ありの割合。縦軸の目盛りは自院のグラフと異なります。「＊」は推計を含む年度です。`);
+
+  // B 手術ありの割合（自院と比較対象全体、幅つき）
   const rate = (a, n) => (a + n ? a / (a + n) : null);
   const selfR = selfRows.map((r) => (r ? [rate(r[A_EST], r[N_EST]), rate(r[A_LO], r[N_HI]), rate(r[A_HI], r[N_LO])] : null));
   const grpR = G.map((g) => (g && g.cnt ? [rate(g.a, g.n), rate(g.aL, g.nH), rate(g.aH, g.nL)] : null));
@@ -156,7 +165,7 @@ function renderDis() {
     tooltip: { ...b.tooltip, trigger: "axis", axisPointer: { type: "shadow", shadowStyle: { color: "rgba(127,127,127,0.08)" } }, formatter: (ps) => { const y = ps[0].dataIndex;
       return `<div style="margin-bottom:2px">${TYL[y]}・${esc(nm)}（推計を含む）</div>` + ps.map((p) => tipRow("約" + est(p.value) + "件", p.seriesName)).join("") +
         tipRow("約" + est(totT[y]) + "件", "合計") + tipRow(totT[y] ? F.pct(selfT[y] / totT[y]) : "–", "自院のシェア"); } },
-    xAxis: ax(b, { type: "category", data: R6LAB, splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
+    xAxis: ax(b, { type: "category", data: yearCats(), splitLine: { show: false }, axisLabel: { ...b.axisCommon.axisLabel, interval: 0 } }),
     yAxis: ax(b, { type: "value", axisLabel: { ...b.axisCommon.axisLabel, formatter: (v) => v.toLocaleString("ja-JP") } }),
     series: ser.map((s, i) => ({ name: s.name, type: "bar", stack: "t", data: s.data.map((v, y) => (has[y] ? v : null)), barMaxWidth: 46,
       itemStyle: { color: s.color, borderColor: css("--surface-1"), borderWidth: 1, borderRadius: i === ser.length - 1 ? [4, 4, 0, 0] : 0 },
